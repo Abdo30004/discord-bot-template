@@ -1,0 +1,29 @@
+{
+  "name": "discord-bot-template",
+  "version": "0.5.0",
+  "description": "simple discord bot template with typescript",
+  "main": "index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "concurrently \"tsc --watch\" \"nodemon dist/index.js --delay 5s\"",
+    "clean": "del /f /q dist",
+    "compile": "tsc",
+    "build": "npm run clean && npm run compile && npm run start",
+    "dev-ts": "tsc --noEmit 2 > nul  &&  ts-node -T src/index.ts"
+  },
+  "keywords": [],
+  "author": "y.abderrahmane",
+  "license": "MIT",
+
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "discord.js": "^14.15.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.3.4"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.12.11"
+  }
+}
