@@ -2,19 +2,17 @@
   "name": "discord-bot-template",
   "version": "0.5.0",
   "description": "simple discord bot template with typescript",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "concurrently \"tsc --watch\" \"nodemon dist/index.js --delay 5s\"",
-    "clean": "del /f /q dist",
+    "dev": "nodemon src/index.ts",
+    "clean": "rmdir /s /q dist",
     "compile": "tsc",
-    "build": "npm run clean && npm run compile && npm run start",
-    "dev-ts": "tsc --noEmit 2 > nul  &&  ts-node -T src/index.ts"
+    "build": "npm run clean | npm run compile && npm run start"
   },
   "keywords": [],
   "author": "y.abderrahmane",
   "license": "MIT",
-
   "dependencies": {
     "chalk": "^4.1.2",
     "discord.js": "^14.15.2",

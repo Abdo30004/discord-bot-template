@@ -8,12 +8,14 @@ import {
 import { cwd } from "process";
 import { readdir, lstat } from "fs/promises";
 import { resolve } from "path";
-import { Command } from "../@types/command";
-import { AnyEvent } from "../@types/event";
 import { CommandTypes } from "../@types/enums";
 import { Logger } from "../utils/logger";
 import { Config } from "../configs/bot";
-
+import { Command } from "../@types/command";
+import { AnyEvent } from "../@types/event";
+import { connectToDB } from "../database/main";
+import { connection } from "mongoose";
+import * as Models from "../database/models/exports";
 class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
   protected cwd: string = cwd();
 
@@ -25,6 +27,11 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
   public config = Config;
 
   public logger = Logger;
+
+  public db: {
+    connection: typeof connection;
+    models: typeof Models;
+  } | null = null;
 
   constructor(options: ClientOptions) {
     super(options);
@@ -145,16 +152,25 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
     }
   }
 
+  protected async startDatabase(): Promise<boolean> {
+    try {
+      this.db = await connectToDB();
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  }
+
   protected async waitUntilReady(timeout = 60 * 1000): Promise<boolean> {
     return new Promise((resolve, reject) => {
+      if (this.isReady()) return resolve(true);
       this.once("ready", () => resolve(true));
       setTimeout(() => reject(false), timeout);
     });
   }
 
   public async init(options: StartOptions): Promise<boolean> {
-    await this.login(options.token);
-
     let loadCommands = await this.loadCommands(
       options.commandsDirName,
       options.debug
@@ -164,16 +180,19 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
       options.eventsDirName,
       options.debug
     );
-
+    await this.login(options.token);
     await this.waitUntilReady();
 
     let registeredCommands = await this.registerCommands();
 
+    let connectedToDatabase = await this.startDatabase();
+    /*
     if (loadCommands) console.log("Commands loaded successfully");
     if (loadEvents) console.log("Events loaded successfully");
     if (registeredCommands) console.log("Commands registered successfully");
 
-    return loadCommands && loadEvents && registeredCommands;
+    return loadCommands && loadEvents && registeredCommands;*/
+    return true;
   }
 }
 

@@ -30,11 +30,9 @@ class Logger {
   }
 
   public static logCommandUsed(command: Command, user: User) {
-    let message = `${chalk.bgRedBright.green(
-      command.data.name
-    )} ${chalk.bgCyan.red(
+    let message = `-${chalk.greenBright(command.data.name)} ${chalk.red(
       CommandTypes[command.type]
-    )} was used by ${chalk.bgRedBright.green(user.username)}`;
+    )} was used by ${chalk.greenBright(user.username)}`;
     console.log(message);
   }
 }

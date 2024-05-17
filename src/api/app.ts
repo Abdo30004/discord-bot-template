@@ -9,6 +9,16 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+
+
+app.use(
+  (req, res) => {
+    res.status(404).send("Not Found");
+  }
+)
+
+
+
 const PORT = Number(process.env.PORT) || 3000;
 
 app.listen(PORT, () => {

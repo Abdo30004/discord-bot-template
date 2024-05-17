@@ -14,12 +14,14 @@ import {
   ApplicationCommandType,
   ChatInputCommandInteraction,
   ContextMenuCommandInteraction,
+  Message,
 } from "discord.js";
 
 type BooleanPromise = Promise<boolean>;
 
 interface BaseCommand {
   type: CommandTypes;
+  devOnly?: boolean;
 }
 
 interface ApplicationCommand extends BaseCommand {
@@ -50,7 +52,7 @@ interface ContextMenuCommand extends ApplicationCommand {
 interface MessageCommand extends BaseCommand {
   type: CommandTypes.MessageCommand;
   data: MessageCommandBuilder;
-  execute: (client: Client, message: Message,args:string[]) => BooleanPromise;
+  execute: (client: Client, message: Message, args: string[]) => BooleanPromise;
 }
 
 declare type Command = SlashCommand | ContextMenuCommand | MessageCommand;
