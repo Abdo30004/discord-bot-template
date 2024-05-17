@@ -1,0 +1,8 @@
+{
+  "verbose": false,
+  "watch": ["src"],
+  "delay": 5000,
+  "execMap": {
+    "ts": "tsc --noEmit &&  ts-node -T"
+  }
+}
