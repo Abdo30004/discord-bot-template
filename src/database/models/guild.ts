@@ -8,8 +8,11 @@ const GuildSchema = new Schema<Guild>(
     },
     prefix: {
       type: String,
+      required: true,
       default: "!",
+      
     },
+    
   },
   {
     _id: false,
@@ -19,7 +22,5 @@ const GuildSchema = new Schema<Guild>(
 );
 
 const GuildModel = model<Guild>("guilds", GuildSchema);
-
-let c = new GuildModel({});
 
 export { GuildModel };

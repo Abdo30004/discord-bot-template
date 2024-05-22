@@ -13,9 +13,8 @@ import { Logger } from "../utils/logger";
 import { Config } from "../configs/bot";
 import { Command } from "../@types/command";
 import { AnyEvent } from "../@types/event";
-import { connectToDB } from "../database/main";
-import { connection } from "mongoose";
-import * as Models from "../database/models/exports";
+import { connectToDB, database } from "../database/main";
+
 class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
   protected cwd: string = cwd();
 
@@ -28,10 +27,7 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
 
   public logger = Logger;
 
-  public db: {
-    connection: typeof connection;
-    models: typeof Models;
-  } | null = null;
+  public db = database;
 
   constructor(options: ClientOptions) {
     super(options);
@@ -116,7 +112,8 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
         try {
           await event.run(this, ...args);
         } catch (error) {
-          console.log(event.name, error);
+          console.log(`Error in event ${event.name}`);
+          Logger.logError(error as Error);
         }
       });
 
@@ -154,10 +151,10 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
 
   protected async startDatabase(): Promise<boolean> {
     try {
-      this.db = await connectToDB();
-      return true;
+      let connected = await connectToDB();
+      return connected;
     } catch (error) {
-      console.log(error);
+      Logger.logError(error as Error);
       return false;
     }
   }
@@ -176,23 +173,32 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
       options.debug
     );
 
+    if (options.debug && loadCommands)
+      console.log("Commands loaded successfully");
+
     let loadEvents = await this.loadEvents(
       options.eventsDirName,
       options.debug
     );
+
+    if (options.debug && loadEvents) console.log("Events loaded successfully");
+
     await this.login(options.token);
     await this.waitUntilReady();
 
     let registeredCommands = await this.registerCommands();
 
-    let connectedToDatabase = await this.startDatabase();
-    /*
-    if (loadCommands) console.log("Commands loaded successfully");
-    if (loadEvents) console.log("Events loaded successfully");
-    if (registeredCommands) console.log("Commands registered successfully");
+    if (options.debug && registeredCommands)
+      console.log("Commands registered successfully");
 
-    return loadCommands && loadEvents && registeredCommands;*/
-    return true;
+    let connectedToDatabase = await this.startDatabase();
+
+    if (options.debug && connectedToDatabase)
+      console.log("Connected to database");
+
+    return (
+      loadCommands && loadEvents && registeredCommands && connectedToDatabase
+    );
   }
 }
 

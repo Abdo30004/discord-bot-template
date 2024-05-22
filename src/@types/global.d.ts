@@ -7,3 +7,8 @@ declare namespace NodeJS {
     [key: string]: undefined; //force all env vars to be explicitly defined
   }
 }
+
+declare interface String {
+  format(record:Record<string,string>): string;
+  toTitleCase(): string;
+}

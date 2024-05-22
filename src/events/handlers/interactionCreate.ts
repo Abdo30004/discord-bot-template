@@ -1,6 +1,6 @@
 import { Event } from "../../@types/event";
 import { CommandTypes } from "../../@types/enums";
-import {Logger} from "../../utils/logger";
+import { Logger } from "../../utils/logger";
 import {
   ApplicationCommand,
   ContextMenuCommand,
@@ -31,6 +31,18 @@ let event: Event<"interactionCreate"> = {
 
     if (!command) return false;
 
+    if (
+      command.devOnly &&
+      !client.config.devsIds.includes(interaction.user.id)
+    ) {
+      await interaction.reply({
+        content: "You don't have permission to use this command.",
+        ephemeral: true,
+      });
+
+      return false;
+    }
+
     if (command.defer)
       await interaction.deferReply({ ephemeral: command.ephemeral });
 
@@ -50,9 +62,24 @@ let event: Event<"interactionCreate"> = {
       else if (
         command.type === CommandTypes.UserContextMenuCommand &&
         interaction.isUserContextMenuCommand()
-      )await command.execute(client, interaction);
+      )
+        await command.execute(client, interaction);
     } catch (error) {
       Logger.logError(error as Error);
+
+      let errorMessage = "An error occurred while executing this command.";
+
+      if (command.defer)
+        await interaction
+          .editReply({
+            content: errorMessage,
+          })
+          .catch(() => null);
+      else
+        await interaction
+          .reply({ content: errorMessage, ephemeral: true })
+          .catch(() => null);
+
       return false;
     }
 
