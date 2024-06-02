@@ -1,17 +1,16 @@
-import { Client } from "./base/client";
-import { GatewayIntentBits, Partials } from "discord.js";
-import { config as envConfig } from "dotenv";
+import { Client } from './base/client';
+import { GatewayIntentBits, Partials } from 'discord.js';
+import { config as envConfig } from 'dotenv';
 envConfig();
-import "./api/app";
+import './api/app';
 
-import "./utils/prototype";
+import './utils/prototype';
 
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.GuildMembers,
-
     GatewayIntentBits.MessageContent,
   ],
   partials: [Partials.Message],
@@ -19,7 +18,7 @@ const client = new Client({
 
 client.init({
   token: process.env.TOKEN,
-  commandsDirName: "commands",
-  eventsDirName: "events",
+  commandsDirName: 'commands',
+  eventsDirName: 'events',
   debug: true,
 });

@@ -9,6 +9,8 @@ declare namespace NodeJS {
 }
 
 declare interface String {
-  format(record:Record<string,string>): string;
+  format(record: Record<string, string>): string;
   toTitleCase(): string;
+  toCamelCase(firstCapital?: boolean): string;
 }
+

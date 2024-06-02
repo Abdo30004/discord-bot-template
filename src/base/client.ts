@@ -14,6 +14,7 @@ import { Config } from "../configs/bot";
 import { Command } from "../@types/command";
 import { AnyEvent } from "../@types/event";
 import { connectToDB, database } from "../database/main";
+import chalk from "chalk";
 
 class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
   protected cwd: string = cwd();
@@ -112,7 +113,7 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
         try {
           await event.run(this, ...args);
         } catch (error) {
-          console.log(`Error in event ${event.name}`);
+          console.log(chalk.red`Error in event ${event.name}`);
           Logger.logError(error as Error);
         }
       });
@@ -173,8 +174,7 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
       options.debug
     );
 
-    if (options.debug && loadCommands)
-      console.log("Commands loaded successfully");
+    if (options.debug && loadCommands) console.log("Commands loaded successfully");
 
     let loadEvents = await this.loadEvents(
       options.eventsDirName,
@@ -184,6 +184,7 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
     if (options.debug && loadEvents) console.log("Events loaded successfully");
 
     await this.login(options.token);
+
     await this.waitUntilReady();
 
     let registeredCommands = await this.registerCommands();

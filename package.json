@@ -8,7 +8,8 @@
     "dev": "nodemon src/index.ts",
     "clean": "rmdir /s /q dist",
     "compile": "tsc",
-    "build": "npm run clean | npm run compile && npm run start"
+    "build": "npm run clean | npm run compile && npm run start",
+    "format": "prettier --write src/**/*.ts"
   },
   "keywords": [],
   "author": "y.abderrahmane",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
-    "@types/node": "^20.12.11"
+    "@types/node": "^20.12.11",
+    "prettier": "^3.3.0"
   }
 }

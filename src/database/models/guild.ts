@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model } from 'mongoose';
 
 const GuildSchema = new Schema<Guild>(
   {
@@ -9,10 +9,8 @@ const GuildSchema = new Schema<Guild>(
     prefix: {
       type: String,
       required: true,
-      default: "!",
-      
+      default: '!',
     },
-    
   },
   {
     _id: false,
@@ -21,6 +19,6 @@ const GuildSchema = new Schema<Guild>(
   }
 );
 
-const GuildModel = model<Guild>("guilds", GuildSchema);
+const GuildModel = model<Guild>('guilds', GuildSchema);
 
 export { GuildModel };
