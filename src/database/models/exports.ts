@@ -1,3 +1,3 @@
-import { GuildModel } from "./guild";
+import { GuildModel } from './guild';
 
 export { GuildModel };

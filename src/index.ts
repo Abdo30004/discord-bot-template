@@ -1,6 +1,8 @@
 import { Client } from './base/client';
 import { GatewayIntentBits, Partials } from 'discord.js';
 import { config as envConfig } from 'dotenv';
+import process from 'process';
+
 envConfig();
 import './api/app';
 

@@ -1,28 +1,22 @@
-import {
-  Client as DiscordBotClient,
-  ClientOptions,
-  Collection,
-  REST,
-  Routes,
-} from "discord.js";
-import { cwd } from "process";
-import { readdir, lstat } from "fs/promises";
-import { resolve } from "path";
-import { CommandTypes } from "../@types/enums";
-import { Logger } from "../utils/logger";
-import { Config } from "../configs/bot";
-import { Command } from "../@types/command";
-import { AnyEvent } from "../@types/event";
-import { connectToDB, database } from "../database/main";
-import chalk from "chalk";
+import { Client as DiscordBotClient, ClientOptions, Collection, REST, Routes } from 'discord.js';
+import { cwd } from 'process';
+import { readdir, lstat } from 'fs/promises';
+import { resolve } from 'path';
+import { CommandTypes } from '../@types/enums';
+import { Logger } from '../utils/logger';
+import { Config } from '../configs/bot';
+import { Command } from '../@types/command';
+import { AnyEvent } from '../@types/event';
+import { connectToDB, database } from '../database/main';
+import chalk from 'chalk';
+import process from 'process';
 
 class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
   protected cwd: string = cwd();
 
-  protected isTypescript: boolean = process.argv[1].endsWith(".ts");
+  protected isTypescript: boolean = process.argv[1].endsWith('.ts');
 
-  public commands: Collection<CommandTypes, Collection<String, Command>> =
-    new Collection();
+  public commands: Collection<CommandTypes, Collection<string, Command>> = new Collection();
 
   public config = Config;
 
@@ -36,27 +30,23 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
 
   protected async readDir<T>(dir: string): Promise<T[]> {
     try {
-      let baseDir = this.isTypescript ? "src" : "dist";
-      let path = resolve(this.cwd, baseDir, dir);
-      let files = await readdir(path);
-      let data: T[] = [];
-      for (let file of files) {
-        let filePath = resolve(path, file);
-        let stat = await lstat(filePath);
+      const baseDir = this.isTypescript ? 'src' : 'dist';
+      const path = resolve(this.cwd, baseDir, dir);
+      const files = await readdir(path);
+      const data: T[] = [];
+      for (const file of files) {
+        const filePath = resolve(path, file);
+        const stat = await lstat(filePath);
 
         if (stat.isDirectory()) {
-          let insideFiles = (await this.readDir(filePath)) as T[];
+          const insideFiles = (await this.readDir(filePath)) as T[];
           data.push(...insideFiles);
           continue;
         }
 
-        if (
-          (this.isTypescript && !file.endsWith(".ts")) ||
-          (!this.isTypescript && !file.endsWith(".js"))
-        )
-          continue;
+        if ((this.isTypescript && !file.endsWith('.ts')) || (!this.isTypescript && !file.endsWith('.js'))) continue;
 
-        let { default: d } = (await import(filePath)) as {
+        const { default: d } = (await import(filePath)) as {
           [key: string]: T | undefined;
         };
 
@@ -74,17 +64,12 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
     }
   }
 
-  protected async loadCommands(
-    commandsDir: string,
-    debug = false
-  ): Promise<boolean> {
+  protected async loadCommands(commandsDir: string, debug = false): Promise<boolean> {
     let commands = await this.readDir<Command>(commandsDir).catch(() => null);
     if (!commands) return false;
-    commands = commands.sort(
-      (a, b) => a.type - b.type || a.data.name.localeCompare(b.data.name)
-    );
+    commands = commands.sort((a, b) => a.type - b.type || a.data.name.localeCompare(b.data.name));
 
-    for (let command of commands) {
+    for (const command of commands) {
       let commandsCollection = this.commands.get(command.type);
       if (!commandsCollection) {
         commandsCollection = new Collection();
@@ -99,14 +84,11 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
     return true;
   }
 
-  protected async loadEvents(
-    eventsDir: string,
-    debug = false
-  ): Promise<boolean> {
-    let events = await this.readDir<AnyEvent>(eventsDir).catch(() => null);
+  protected async loadEvents(eventsDir: string, debug = false): Promise<boolean> {
+    const events = await this.readDir<AnyEvent>(eventsDir).catch(() => null);
     if (!events) return false;
 
-    for (let event of events) {
+    for (const event of events) {
       this.on(event.name, async (...args) => {
         if (!this.isReady()) return false;
 
@@ -125,16 +107,14 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
   }
 
   protected async registerCommands(): Promise<boolean> {
-    let commands = this.commands
+    const commands = this.commands
       .filter((commands, type) => type !== CommandTypes.MessageCommand)
-      .map((commands) => [...commands.values()])
-      .filter((commands) =>
-        commands.every((cmd) => cmd.type !== CommandTypes.MessageCommand)
-      )
+      .map(commands => [...commands.values()])
+      .filter(commands => commands.every(cmd => cmd.type !== CommandTypes.MessageCommand))
       .flat()
-      .map((command) => command.data.toJSON());
+      .map(command => command.data.toJSON());
 
-    let rest = new REST();
+    const rest = new REST();
 
     if (!this.isReady()) return false;
 
@@ -152,7 +132,7 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
 
   protected async startDatabase(): Promise<boolean> {
     try {
-      let connected = await connectToDB();
+      const connected = await connectToDB();
       return connected;
     } catch (error) {
       Logger.logError(error as Error);
@@ -160,46 +140,38 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
     }
   }
 
-  protected async waitUntilReady(timeout = 60 * 1000): Promise<boolean> {
+  protected  waitUntilReady(timeout = 60 * 1000): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (this.isReady()) return resolve(true);
-      this.once("ready", () => resolve(true));
+      this.once('ready', () => resolve(true));
       setTimeout(() => reject(false), timeout);
     });
   }
 
   public async init(options: StartOptions): Promise<boolean> {
-    let loadCommands = await this.loadCommands(
-      options.commandsDirName,
-      options.debug
-    );
+    const loadCommands = await this.loadCommands(options.commandsDirName, options.debug);
 
-    if (options.debug && loadCommands) console.log("Commands loaded successfully");
+    if (options.debug && loadCommands) console.log('Commands loaded successfully');
 
-    let loadEvents = await this.loadEvents(
-      options.eventsDirName,
-      options.debug
-    );
+    const loadEvents = await this.loadEvents(options.eventsDirName, options.debug);
 
-    if (options.debug && loadEvents) console.log("Events loaded successfully");
+    if (options.debug && loadEvents) console.log('Events loaded successfully');
 
     await this.login(options.token);
 
     await this.waitUntilReady();
 
-    let registeredCommands = await this.registerCommands();
+    const registeredCommands = await this.registerCommands();
 
-    if (options.debug && registeredCommands)
-      console.log("Commands registered successfully");
+    if (options.debug && registeredCommands) console.log('Commands registered successfully');
 
-    let connectedToDatabase = await this.startDatabase();
+    const connectedToDatabase = await this.startDatabase();
 
-    if (options.debug && connectedToDatabase)
-      console.log("Connected to database");
+    if (options.debug && connectedToDatabase) console.log('Connected to database');
 
-    return (
-      loadCommands && loadEvents && registeredCommands && connectedToDatabase
-    );
+    const allSuccess = loadCommands && loadEvents && registeredCommands && connectedToDatabase;
+
+    return allSuccess;
   }
 }
 

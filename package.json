@@ -5,11 +5,14 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "nodemon src/index.ts",
+    "bun": "bun dist/index.js",
+    "dev-ts": "nodemon src/index.ts",
     "clean": "rmdir /s /q dist",
     "compile": "tsc",
     "build": "npm run clean | npm run compile && npm run start",
-    "format": "prettier --write src/**/*.ts"
+    "format": "prettier --write src/**/*.ts",
+    "lint:check": "eslint . --ext .ts --ignore-path .gitignore",
+    "lint:fix": "npm run lint:check -- --fix"
   },
   "keywords": [],
   "author": "y.abderrahmane",
@@ -24,6 +27,9 @@
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^20.12.11",
+    "@typescript-eslint/eslint-plugin": "^7.11.0",
+    "@typescript-eslint/parser": "^7.11.0",
+    "eslint": "^8.57.0",
     "prettier": "^3.3.0"
   }
 }
