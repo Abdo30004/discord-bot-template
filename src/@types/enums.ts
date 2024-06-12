@@ -1,8 +1,8 @@
 enum CommandTypes {
-	SlashCommand = 1,
-	UserContextMenuCommand,
-	MessageContextMenuCommand,
-	MessageCommand
+  SlashCommand = 1,
+  UserContextMenuCommand,
+  MessageContextMenuCommand,
+  MessageCommand
 }
 
 export { CommandTypes };

@@ -1,30 +1,59 @@
+import { MessageCommandBuilderData, MessageCommandCategory } from '../@types/command';
+
 export class MessageCommandBuilder {
-	public name: string = '';
-	public description: string = '';
-	public aliases: string[] = [];
+  public data: MessageCommandBuilderData = {
+    name: '',
+    description: '',
+    aliases: [],
+    category: null
+  };
 
-	// constructor() {}
+  constructor(data?: MessageCommandBuilderData) {
+    if (data) this.data = data;
+  }
 
-	setName(name: string) {
-		this.name = name;
-		return this;
-	}
-	setDescription(description: string) {
-		this.description = description;
-		return this;
-	}
+  setName(name: string) {
+    this.data.name = name;
+    return this;
+  }
 
-	setAliases(aliases: string[]) {
-		this.aliases = aliases;
-		return this;
-	}
+  get name() {
+    return this.data.name;
+  }
 
-	addAlias(alias: string) {
-		this.aliases.push(alias);
-		return this;
-	}
+  setDescription(description: string) {
+    this.data.description = description;
+    return this;
+  }
 
-	toJSON() {
-		return JSON.parse(JSON.stringify(this));
-	}
+  get description() {
+    return this.data.description;
+  }
+
+  setAliases(aliases: string[]) {
+    this.data.aliases = aliases;
+    return this;
+  }
+
+  get aliases() {
+    return this.data.aliases;
+  }
+
+  addAliases(...aliases: string[]) {
+    this.data.aliases.push(...aliases.filter(alias => !this.data.aliases.includes(alias)));
+    return this;
+  }
+
+  setCategory(category: MessageCommandCategory) {
+    this.data.category = category;
+    return this;
+  }
+
+  get category() {
+    return this.data.category;
+  }
+
+  toJSON() {
+    return this.data;
+  }
 }

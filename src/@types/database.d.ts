@@ -1,4 +1,4 @@
 interface Guild {
-	_id: string;
-	prefix: string;
+  _id: string;
+  prefix: string;
 }

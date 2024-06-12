@@ -8,6 +8,7 @@ import { Config } from '../configs/bot';
 import { Command } from '../@types/command';
 import { AnyEvent } from '../@types/event';
 import { connectToDB, database } from '../database/main';
+import { startApi } from '../api/app';
 import chalk from 'chalk';
 import process from 'process';
 
@@ -23,6 +24,8 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
   public logger = Logger;
 
   public db = database;
+
+  public env = process.env;
 
   constructor(options: ClientOptions) {
     super(options);
@@ -114,14 +117,11 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
       .flat()
       .map(command => command.data.toJSON());
 
-    const rest = new REST();
+    const rest = new REST().setToken(this.env.TOKEN);
 
-    if (!this.isReady()) return false;
-
-    rest.setToken(this.token);
     try {
-      await rest.put(Routes.applicationCommands(this.user.id), {
-        body: commands,
+      await rest.put(Routes.applicationCommands(this.env.CLIENT_ID), {
+        body: commands
       });
       return true;
     } catch (error) {
@@ -140,7 +140,7 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
     }
   }
 
-  protected  waitUntilReady(timeout = 60 * 1000): Promise<boolean> {
+  protected waitUntilReady(timeout = 60 * 1000): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (this.isReady()) return resolve(true);
       this.once('ready', () => resolve(true));
@@ -151,25 +151,28 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
   public async init(options: StartOptions): Promise<boolean> {
     const loadCommands = await this.loadCommands(options.commandsDirName, options.debug);
 
-    if (options.debug && loadCommands) console.log('Commands loaded successfully');
+    if (options.debug && loadCommands) console.log(chalk.white.bold.bgGreenBright`Commands loaded successfully\n`);
 
     const loadEvents = await this.loadEvents(options.eventsDirName, options.debug);
 
-    if (options.debug && loadEvents) console.log('Events loaded successfully');
-
-    await this.login(options.token);
-
-    await this.waitUntilReady();
+    if (options.debug && loadEvents) console.log(chalk.white.bold.bgBlueBright`Events loaded successfully\n`);
 
     const registeredCommands = await this.registerCommands();
 
-    if (options.debug && registeredCommands) console.log('Commands registered successfully');
+    if (options.debug && registeredCommands)
+      console.log(chalk.white.bold.bgGreen`ApplicationCommands registered successfully\n`);
 
     const connectedToDatabase = await this.startDatabase();
 
-    if (options.debug && connectedToDatabase) console.log('Connected to database');
+    if (options.debug && connectedToDatabase) console.log(chalk.bold.white.bgCyanBright`Connected to database\n`);
 
-    const allSuccess = loadCommands && loadEvents && registeredCommands && connectedToDatabase;
+    await this.login(options.token);
+
+    const startApiSuccess = await startApi(options.debug);
+
+    if (options.debug && startApiSuccess) console.log(chalk.white.bold.bgGreenBright`API started successfully\n`);
+
+    const allSuccess = loadCommands && loadEvents && registeredCommands && connectedToDatabase && startApiSuccess;
 
     return allSuccess;
   }

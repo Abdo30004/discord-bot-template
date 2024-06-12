@@ -5,11 +5,13 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
+    "dev:ts": "nodemon src/index.ts",
     "bun": "bun dist/index.js",
-    "dev-ts": "nodemon src/index.ts",
+    "bun:ts": "bun src/index.ts",
     "clean": "rmdir /s /q dist",
     "compile": "tsc",
     "build": "npm run clean | npm run compile && npm run start",
+    "build:bun": "npm run clean | npm run compile && npm run bun",
     "format": "prettier --write src/**/*.ts",
     "lint:check": "eslint . --ext .ts --ignore-path .gitignore",
     "lint:fix": "npm run lint:check -- --fix"
@@ -22,10 +24,16 @@
     "discord.js": "^14.15.2",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "figlet": "^1.7.0",
     "mongoose": "^8.3.4"
   },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  
   "devDependencies": {
     "@types/express": "^4.17.21",
+    "@types/figlet": "^1.5.8",
     "@types/node": "^20.12.11",
     "@typescript-eslint/eslint-plugin": "^7.11.0",
     "@typescript-eslint/parser": "^7.11.0",
