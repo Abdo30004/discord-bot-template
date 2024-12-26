@@ -2,13 +2,14 @@ import { Client } from './base/client';
 import { ActivityType, AllowedMentionsTypes, GatewayIntentBits, Partials, PresenceUpdateStatus } from 'discord.js';
 import { config as envConfig } from 'dotenv';
 import process from 'process';
-
+import chalk from 'chalk';
 envConfig();
 
 import './api/app';
 import './utils/prototype';
+import { Logger } from './utils/logger';
 
-const client = new Client({
+export const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
@@ -38,7 +39,25 @@ client.init({
   token: process.env.TOKEN,
   commandsDirName: 'commands',
   eventsDirName: 'events',
+  registerCommands: true,
   debug: true
 });
 
-export { client };
+
+
+
+
+process.on('unhandledRejection', (error:Error) => {
+  Logger.logError(error);
+});
+
+process.on('uncaughtException', (error:Error) => {
+  Logger.logError(error);
+});
+
+
+process.on('SIGINT', async () => {
+  console.log(chalk.red.bold('\nShutting down...'));
+  process.exit(0);
+});
+

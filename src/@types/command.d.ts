@@ -18,7 +18,7 @@ interface ApplicationCommand extends BaseCommand {
 }
 interface SlashCommand extends ApplicationCommand {
   type: CommandTypes.SlashCommand;
-  data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
+  data: SharedSlashCommand;
 
   execute: (client: Client, interaction: ChatInputCommandInteraction) => BooleanPromise;
 }

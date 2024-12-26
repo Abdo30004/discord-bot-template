@@ -156,10 +156,10 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
     const loadEvents = await this.loadEvents(options.eventsDirName, options.debug);
 
     if (options.debug && loadEvents) console.log(chalk.white.bold.bgBlueBright`Events loaded successfully\n`);
-
-    const registeredCommands = await this.registerCommands();
-
-    if (options.debug && registeredCommands)
+    
+    const registeredCommands = options.registerCommands ? await this.registerCommands() : true;
+    
+    if (options.debug && options.registerCommands &&registeredCommands)
       console.log(chalk.white.bold.bgGreen`ApplicationCommands registered successfully\n`);
 
     const connectedToDatabase = await this.startDatabase();

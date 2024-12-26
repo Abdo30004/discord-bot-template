@@ -1,6 +1,6 @@
 {
   "verbose": false,
-  "watch": ["src"],
+  "watch": ["src", ".env"],
   "delay": 5000,
   "execMap": {
     "ts": "tsc --noEmit &&  ts-node -T"
