@@ -32,7 +32,7 @@ export async function startApi(debug = false): Promise<boolean> {
   const port = ENV.PORT || 3000;
   try {
     server.listen(port, () => {
-      if (debug) console.log(chalk.green(`Server is running on port http://localhost:${port}`));
+      if (debug) console.log(chalk.white.bold.bgCyanBright(`Server is running http://localhost:${port}`));
     });
     return true;
   } catch (error) {

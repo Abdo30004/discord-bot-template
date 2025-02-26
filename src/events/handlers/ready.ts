@@ -2,9 +2,11 @@ import chalk from 'chalk';
 import { Events } from 'discord.js';
 import figlet from 'figlet';
 
-import { Event } from '../../types/event';
-export const event: Event<Events.ClientReady> = {
+import { createEvent } from '../../utils/create';
+
+export const event = createEvent({
   name: Events.ClientReady,
+
   run: async client => {
     const text = figlet.textSync(`${client.user.displayName}`, {
       font: 'Standard',
@@ -16,4 +18,4 @@ export const event: Event<Events.ClientReady> = {
 
     return true;
   }
-};
+});

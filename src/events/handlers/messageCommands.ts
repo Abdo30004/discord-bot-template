@@ -1,8 +1,8 @@
 import { Events } from 'discord.js';
 
-import { Event } from '../../types/event';
+import { createEvent } from '../../utils/create';
 
-export const event: Event<Events.MessageCreate> = {
+export const event = createEvent({
   name: Events.MessageCreate,
   run: async (client, message) => {
     if (message.partial) await message.fetch().catch(() => null);
@@ -29,4 +29,4 @@ export const event: Event<Events.MessageCreate> = {
 
     return true;
   }
-};
+});

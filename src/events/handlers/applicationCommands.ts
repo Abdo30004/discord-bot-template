@@ -1,13 +1,13 @@
 import { Events } from 'discord.js';
 
-import { Event } from '../../types/event';
+import { createEvent } from '../../utils/create';
 import { Logger } from '../../utils/logger';
 
-export const event: Event<Events.InteractionCreate> = {
+export const event = createEvent({
   name: Events.InteractionCreate,
   run: async (client, interaction) => {
+  
     let commandsCollection = null;
-
     if (interaction.isChatInputCommand()) commandsCollection = client.commands.slashCommands;
     else if (interaction.isContextMenuCommand()) commandsCollection = client.commands.contextMenuCommands;
     else return false;
@@ -51,4 +51,4 @@ export const event: Event<Events.InteractionCreate> = {
 
     return true;
   }
-};
+});

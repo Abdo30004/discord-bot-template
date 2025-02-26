@@ -1,9 +1,9 @@
 import { InteractionContextType, SlashCommandBuilder } from 'discord.js';
 
-import { Command } from '../../types/command';
 import { CommandTypes } from '../../types/enums';
+import { createCommand } from '../../utils/create';
 
-export const command: Command = {
+export const command = createCommand({
   type: CommandTypes.SlashCommand,
   data: new SlashCommandBuilder()
     .setName('ping')
@@ -16,4 +16,4 @@ export const command: Command = {
     await interaction.reply(`Pong! ${str}`);
     return true;
   }
-};
+});

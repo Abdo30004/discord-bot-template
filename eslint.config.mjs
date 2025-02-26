@@ -7,7 +7,7 @@ import unicornPlugin from 'eslint-plugin-unicorn';
 
 export default [
   {
-    files: ['**/*.ts'],
+    files: ['src/**/*.ts'],
     plugins: {
       '@typescript-eslint': tsLint,
       'simple-import-sort': simpleImportSortPlugin,

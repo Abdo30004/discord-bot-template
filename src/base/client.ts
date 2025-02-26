@@ -122,7 +122,7 @@ export class Client<Ready extends boolean = boolean> extends DiscordBotClient<Re
 
     for (const event of events) {
       this.on(event.name, async (...args) => {
-        if (!this.isReady()) return false;
+        if (!this.isReady() && event.clientReady !== false) return false;
 
         try {
           await event.run(this, ...args);
@@ -140,7 +140,7 @@ export class Client<Ready extends boolean = boolean> extends DiscordBotClient<Re
 
   protected async registerCommands(): Promise<boolean> {
     const commands = this.commands.applicationCommands.map(command => command.data.toJSON());
-    console.log(commands);
+
     const rest = new REST().setToken(ENV.BOT_TOKEN);
 
     try {
@@ -149,7 +149,7 @@ export class Client<Ready extends boolean = boolean> extends DiscordBotClient<Re
       });
       return true;
     } catch (error) {
-      console.log(error);
+      Logger.logError(error as Error);
       return false;
     }
   }
@@ -188,7 +188,7 @@ export class Client<Ready extends boolean = boolean> extends DiscordBotClient<Re
 
     const connectedToDatabase = await this.startDatabase();
 
-    if (options.debug && connectedToDatabase) console.log(chalk.bold.white.bgCyanBright`Connected to database\n`);
+    if (options.debug && connectedToDatabase) console.log(chalk.white.bold.bgCyanBright`Connected to database\n`);
 
     await this.login(options.token);
 
