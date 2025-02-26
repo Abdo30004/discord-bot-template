@@ -1,5 +1,5 @@
-import { CommandTypes } from '../../types/enums';
-import { createCommand } from '../../utils/create';
+import { CommandTypes } from '../../../types/enums';
+import { createCommand } from '../../../utils/create';
 
 export const command = createCommand({
   type: CommandTypes.ModalSubmitCommand,

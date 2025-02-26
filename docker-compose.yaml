@@ -1,0 +1,36 @@
+
+services:
+  bot:
+    build: .
+    container_name: discord_bot
+    restart: unless-stopped
+    networks:
+      - discord_network
+    env_file:
+      - .env
+    environment:
+      - MONGO_URI=mongodb://admin:password@mongodb:27017
+    depends_on:
+      - mongodb
+    ports:
+      - '${PORT}:${PORT}'
+
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb
+    restart: unless-stopped
+    networks:
+      - discord_network
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+
+volumes:
+  mongo_data:
+    driver: local
+
+networks:
+  discord_network:
+    driver: bridge

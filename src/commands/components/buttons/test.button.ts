@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from 'discord.js';
 
-import { CommandTypes } from '../../types/enums';
-import { createCommand } from '../../utils/create';
+import { CommandTypes } from '../../../types/enums';
+import { createCommand } from '../../../utils/create';
 
 export const command = createCommand({
   type: CommandTypes.ButtonCommand,

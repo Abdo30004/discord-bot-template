@@ -4,7 +4,7 @@ import process from 'node:process';
 
 import chalk from 'chalk';
 import type { ClientOptions } from 'discord.js';
-import { Client as DiscordBotClient, Collection, Events, REST, Routes } from 'discord.js';
+import { Client as DiscordBotClient, Collection, REST, Routes } from 'discord.js';
 
 import { startApi } from '../api/app';
 import { Config } from '../configs/bot';
@@ -88,6 +88,28 @@ export class Client<Ready extends boolean = boolean> extends DiscordBotClient<Re
     }
   }
 
+  protected async loadEvents(eventsDir: string, debug = false): Promise<boolean> {
+    const events = await this.readDir<AnyEvent>(eventsDir).catch(() => null);
+    if (!events) return false;
+
+    for (const event of events) {
+      this.on(event.name, async (...args) => {
+        if (!this.isReady() && event.clientIsReady !== false) return false;
+
+        try {
+          await event.run(this, ...args);
+        } catch (error) {
+          console.log(chalk.red`Error in event ${event.name}`);
+          Logger.logError(error as Error);
+        }
+      });
+
+      if (debug) Logger.logEventRegistered(event);
+    }
+
+    return true;
+  }
+
   protected async loadCommands(commandsDir: string, debug = false): Promise<boolean> {
     let commands = await this.readDir<AnyCommand>(commandsDir).catch(() => null);
     if (!commands) return false;
@@ -134,28 +156,6 @@ export class Client<Ready extends boolean = boolean> extends DiscordBotClient<Re
     return true;
   }
 
-  protected async loadEvents(eventsDir: string, debug = false): Promise<boolean> {
-    const events = await this.readDir<AnyEvent>(eventsDir).catch(() => null);
-    if (!events) return false;
-
-    for (const event of events) {
-      this.on(event.name, async (...args) => {
-        if (!this.isReady() && event.clientIsReady !== false) return false;
-
-        try {
-          await event.run(this, ...args);
-        } catch (error) {
-          console.log(chalk.red`Error in event ${event.name}`);
-          Logger.logError(error as Error);
-        }
-      });
-
-      if (debug) Logger.logEventRegistered(event);
-    }
-
-    return true;
-  }
-
   protected async registerCommands(): Promise<boolean> {
     const commands = this.commands.applicationCommands.map(command => command.data.toJSON());
 
@@ -182,14 +182,6 @@ export class Client<Ready extends boolean = boolean> extends DiscordBotClient<Re
     }
   }
 
-  protected waitUntilReady(timeout = 60 * 1000): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      if (this.isReady()) return resolve(true);
-      this.once(Events.ClientReady, () => resolve(true));
-      setTimeout(() => reject(false), timeout);
-    });
-  }
-
   public async init(options: StartOptions): Promise<boolean> {
     const loadCommands = await this.loadCommands(options.commandsDirName, options.debug);
 
@@ -208,13 +200,18 @@ export class Client<Ready extends boolean = boolean> extends DiscordBotClient<Re
 
     if (options.debug && connectedToDatabase) console.log(chalk.white.bold.bgCyanBright`Connected to database\n`);
 
-    await this.login(options.token);
+    const loggedToDiscord = await this.login(options.token)
+      .then(() => true)
+      .catch(() => false);
+
+    if (options.debug && loggedToDiscord) console.log(chalk.white.bold.bgGreenBright`Logged in to Discord\n`);
 
     const startApiSuccess = await startApi(options.debug);
 
     if (options.debug && startApiSuccess) console.log(chalk.white.bold.bgGreenBright`API started successfully\n`);
 
-    const allSuccess = loadCommands && loadEvents && registeredCommands && connectedToDatabase && startApiSuccess;
+    const allSuccess =
+      loadCommands && loadEvents && registeredCommands && connectedToDatabase && loggedToDiscord && startApiSuccess;
 
     return allSuccess;
   }
