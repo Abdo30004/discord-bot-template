@@ -1,14 +1,12 @@
 import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from 'discord.js';
 
+import { ComponentCommandBuilder } from '../../../base/componentCommandBuilder';
 import { CommandTypes } from '../../../types/enums';
 import { createCommand } from '../../../utils/create';
 
 export const command = createCommand({
   type: CommandTypes.ButtonCommand,
-  data: {
-    name: 'test button',
-    customId: 'test_button'
-  },
+  data: new ComponentCommandBuilder().setName('test_button').setCustomId('test_button'),
   execute: async (client, interaction) => {
     const inputs = [
       new TextInputBuilder()

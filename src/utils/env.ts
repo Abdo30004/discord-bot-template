@@ -1,6 +1,7 @@
 import { config as envConfig } from 'dotenv';
 
 import { Logger } from './logger';
+
 envConfig(); // Load environment variables from .env file
 
 export function checkEnvVar<T = string>(name: string, parser?: (value: string) => T, panic?: true): T;

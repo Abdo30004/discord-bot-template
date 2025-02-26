@@ -14,6 +14,7 @@ import type {
 } from 'discord.js';
 
 import type { Client } from '../base/client';
+import type { ComponentCommandBuilder } from '../base/componentCommandBuilder';
 import type { MessageCommandBuilder } from '../base/messageCommandBuilder';
 import type { CommandTypes } from './enums';
 
@@ -56,45 +57,45 @@ interface ContextMenuCommand extends InteractionCommand {
 
 /* Component Commands */
 
-type componentCommandData = {
+type ComponentCommandBuilderData = {
   name: string;
   customId: string;
 };
 
 interface ButtonCommand extends InteractionCommand {
   type: CommandTypes.ButtonCommand;
-  data: componentCommandData;
+  data: ComponentCommandBuilder;
   execute: (client: Client, interaction: ButtonInteraction) => BooleanPromise;
 }
 interface ModalSubmitCommand extends InteractionCommand {
   type: CommandTypes.ModalSubmitCommand;
-  data: componentCommandData;
+  data: ComponentCommandBuilder;
   execute: (client: Client, interaction: ModalSubmitInteraction) => BooleanPromise;
 }
 interface StringSelectMenuCommand extends InteractionCommand {
   type: CommandTypes.StringSelectMenuCommand;
-  data: componentCommandData;
+  data: ComponentCommandBuilder;
   execute: (client: Client, interaction: StringSelectMenuInteraction) => BooleanPromise;
 }
 interface ChannelSelectMenuCommand extends InteractionCommand {
   type: CommandTypes.ChannelSelectMenuCommand;
-  data: componentCommandData;
+  data: ComponentCommandBuilder;
   execute: (client: Client, interaction: ChannelSelectMenuInteraction) => BooleanPromise;
 }
 interface UserSelectMenuCommand extends InteractionCommand {
   type: CommandTypes.UserSelectMenuCommand;
-  data: componentCommandData;
+  data: ComponentCommandBuilder;
   execute: (client: Client, interaction: UserSelectMenuInteraction) => BooleanPromise;
 }
 interface RoleSelectMenuCommand extends InteractionCommand {
   type: CommandTypes.RoleSelectMenuCommand;
-  data: componentCommandData;
+  data: ComponentCommandBuilder;
   execute: (client: Client, interaction: RoleSelectMenuInteraction) => BooleanPromise;
 }
 
 interface MentionableSelectMenuCommand extends InteractionCommand {
   type: CommandTypes.MentionableSelectMenuCommand;
-  data: componentCommandData;
+  data: ComponentCommandBuilder;
   execute: (client: Client, interaction: MentionableSelectMenuInteraction) => BooleanPromise;
 }
 
