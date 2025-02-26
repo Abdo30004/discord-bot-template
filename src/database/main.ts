@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import { ENV } from '../utils/env';
 import * as models from './models/exports';
 
-const connectToDB = async () => {
+export const connectToDB = async () => {
   try {
     await mongoose.connect(ENV.MONGO_URI, {
       dbName: ENV.DATABASE_NAME,
@@ -17,9 +17,7 @@ const connectToDB = async () => {
   }
 };
 
-const database = {
+export const database = {
   connection: mongoose.connection,
   models
 };
-
-export { database, connectToDB };

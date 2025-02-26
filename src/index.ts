@@ -1,8 +1,8 @@
 import './utils/prototype';
 
-import chalk from 'chalk';
+import process from 'node:process';
+
 import { ActivityType, AllowedMentionsTypes, GatewayIntentBits, Partials, PresenceUpdateStatus } from 'discord.js';
-import process from 'process';
 
 import { Client } from './base/client';
 import { ENV } from './utils/env';
@@ -15,14 +15,12 @@ export const client = new Client({
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.MessageContent
   ],
-  partials: [Partials.Message],
-
+  partials: [Partials.Message, Partials.Channel, Partials.GuildMember],
   allowedMentions: {
     parse: [AllowedMentionsTypes.Role, AllowedMentionsTypes.User],
     repliedUser: true
   },
   failIfNotExists: false,
-
   presence: {
     activities: [
       {
@@ -33,6 +31,7 @@ export const client = new Client({
     status: PresenceUpdateStatus.DoNotDisturb
   }
 });
+
 client.init({
   token: ENV.BOT_TOKEN,
   commandsDirName: 'commands',
@@ -50,6 +49,6 @@ process.on('uncaughtException', (error: Error) => {
 });
 
 process.on('SIGINT', async () => {
-  console.log(chalk.red.bold('\nShutting down...'));
+  Logger.logWarningMessage('\nShutting down...');
   process.exit(0);
 });

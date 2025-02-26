@@ -3,7 +3,7 @@ import { InteractionContextType, SlashCommandBuilder } from 'discord.js';
 import { Command } from '../../types/command';
 import { CommandTypes } from '../../types/enums';
 
-const command: Command = {
+export const command: Command = {
   type: CommandTypes.SlashCommand,
   data: new SlashCommandBuilder()
     .setName('ping')
@@ -17,5 +17,3 @@ const command: Command = {
     return true;
   }
 };
-
-export default command;

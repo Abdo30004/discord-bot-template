@@ -3,7 +3,7 @@ import { Events } from 'discord.js';
 import figlet from 'figlet';
 
 import { Event } from '../../types/event';
-const event: Event<Events.ClientReady> = {
+export const event: Event<Events.ClientReady> = {
   name: Events.ClientReady,
   run: async client => {
     const text = figlet.textSync(`${client.user.displayName}`, {
@@ -17,5 +17,3 @@ const event: Event<Events.ClientReady> = {
     return true;
   }
 };
-
-export default event;

@@ -5,19 +5,21 @@ import { Command } from '../types/command';
 import { CommandTypes } from '../types/enums';
 import { AnyEvent } from '../types/event';
 
-class Logger {
-  public static logError(error: Error): void {
+export class Logger {
+  public static logError(error: Error, panic = false): void {
     console.log(
       `${chalk.red.underline.bold('Error:')} ${chalk.green.bold(
         error.name
       )} ${chalk.red.bold(error.message)}\n${chalk.white(error.stack)}`
     );
+    if (panic) process.exit(1);
   }
-  public static logErrorMessage(message: string): void {
+  public static logErrorMessage(message: string, panic = false): void {
     console.log(`${chalk.red.underline.bold('Error:')} ${chalk.red.bold(message)}\n`);
+    if (panic) process.exit(1);
   }
 
-  public static logWarning(warning: string): void {
+  public static logWarningMessage(warning: string): void {
     console.log(`${chalk.yellow.underline.bold('Warning:')} ${chalk.red.bold(warning)}\n`);
   }
 
@@ -40,5 +42,3 @@ class Logger {
     console.log(message);
   }
 }
-
-export { Logger };

@@ -1,29 +1,37 @@
+import { lstat, readdir } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import process from 'node:process';
+
 import chalk from 'chalk';
-import { Client as DiscordBotClient, ClientOptions, Collection, Events,REST, Routes } from 'discord.js';
-import { lstat,readdir } from 'fs/promises';
-import { resolve } from 'path';
-import { cwd } from 'process';
-import process from 'process';
+import { Client as DiscordBotClient, ClientOptions, Collection, Events, REST, Routes } from 'discord.js';
 
 import { startApi } from '../api/app';
 import { Config } from '../configs/bot';
 import { connectToDB, database } from '../database/main';
-import { Command } from '../types/command';
+import { ApplicationCommand, ClientCommands, Command } from '../types/command';
 import { CommandTypes } from '../types/enums';
 import { AnyEvent } from '../types/event';
 import { ENV } from '../utils/env';
 import { Logger } from '../utils/logger';
 
-
-class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
-  protected cwd: string = cwd();
+export class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
+  protected cwd: string = process.cwd();
 
   protected isTypescript: boolean = process.argv[1].endsWith('.ts');
-
   public static readonly sourceFolder = 'src';
   public static readonly distFolder = 'dist';
 
-  public commands: Collection<CommandTypes, Collection<string, Command>> = new Collection();
+  public commands: ClientCommands = {
+    messageCommands: new Collection(),
+    slashCommands: new Collection(),
+    contextMenuCommands: new Collection(),
+    buttonCommands: new Collection(),
+    selectMenuCommands: new Collection(),
+    modalSubmit: new Collection(),
+    get applicationCommands() {
+      return new Collection<string, ApplicationCommand>([...this.slashCommands, ...this.contextMenuCommands]);
+    }
+  };
 
   public config = Config;
 
@@ -48,27 +56,28 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
         const stat = await lstat(filePath);
 
         if (stat.isDirectory()) {
-          const insideFiles = (await this.readDir(filePath)) as T[];
+          const insideFiles: T[] = await this.readDir(filePath);
           data.push(...insideFiles);
           continue;
         }
 
-        if ((this.isTypescript && !file.endsWith('.ts')) || (!this.isTypescript && !file.endsWith('.js'))) continue;
+        if (!(this.isTypescript ? file.endsWith('.ts') : file.endsWith('.js'))) continue;
 
-        const { default: d } = (await import(filePath)) as {
-          [key: string]: T | undefined;
-        };
+        const importData: Record<string, T | undefined> = await import(filePath);
+        const importedLength = Object.keys(importData).length;
 
-        if (!d) {
-          console.log(`File ${filePath} does not have a default export`);
-          process.exit(1);
+        if (importedLength === 0) {
+          Logger.logErrorMessage(`File ${filePath} is empty, no exports found`, true);
         }
 
-        data.push(d);
+        for (const key in importData) {
+          const imported = importData[key] as T;
+          data.push(imported);
+        }
       }
       return data;
     } catch (error) {
-      console.log(error);
+      Logger.logError(error as Error);
       return [];
     }
   }
@@ -79,13 +88,27 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
     commands = commands.sort((a, b) => a.type - b.type || a.data.name.localeCompare(b.data.name));
 
     for (const command of commands) {
-      let commandsCollection = this.commands.get(command.type);
-      if (!commandsCollection) {
-        commandsCollection = new Collection();
-        this.commands.set(command.type, commandsCollection);
+      switch (command.type) {
+        case CommandTypes.MessageCommand:
+          this.commands.messageCommands.set(command.data.name, command);
+          break;
+        case CommandTypes.SlashCommand:
+          this.commands.slashCommands.set(command.data.name, command);
+          break;
+        case CommandTypes.UserContextMenuCommand:
+        case CommandTypes.MessageContextMenuCommand:
+          this.commands.contextMenuCommands.set(command.data.name, command);
+          break;
+        case CommandTypes.ButtonCommand:
+          this.commands.buttonCommands.set(command.data.customId, command);
+          break;
+        case CommandTypes.SelectMenuCommand:
+          this.commands.selectMenuCommands.set(command.data.customId, command);
+          break;
+        case CommandTypes.ModalSubmitCommand:
+          this.commands.modalSubmit.set(command.data.customId, command);
+          break;
       }
-
-      commandsCollection.set(command.data.name, command);
 
       if (debug) Logger.logCommandRegistered(command);
     }
@@ -116,13 +139,8 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
   }
 
   protected async registerCommands(): Promise<boolean> {
-    const commands = this.commands
-      .filter((commands, type) => type !== CommandTypes.MessageCommand)
-      .map(commands => [...commands.values()])
-      .filter(commands => commands.every(cmd => cmd.type !== CommandTypes.MessageCommand))
-      .flat()
-      .map(command => command.data.toJSON());
-
+    const commands = this.commands.applicationCommands.map(command => command.data.toJSON());
+    console.log(commands);
     const rest = new REST().setToken(ENV.BOT_TOKEN);
 
     try {
@@ -183,5 +201,3 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
     return allSuccess;
   }
 }
-
-export { Client };

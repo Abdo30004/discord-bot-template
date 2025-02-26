@@ -1,6 +1,7 @@
+import http from 'node:http';
+
 import chalk from 'chalk';
 import express from 'express';
-import http from 'http';
 
 import { client } from '../index';
 import { ENV } from '../utils/env';
@@ -17,17 +18,17 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-// app.get('/ready', (req, res) => {
-//   res.json({
-//     status: client.isReady()
-//   });
-// });
+app.get('/ready', (req, res) => {
+  res.json({
+    status: client.isReady()
+  });
+});
 
 app.use((req, res) => {
   res.status(404).send('Not Found');
 });
 
-async function startApi(debug = false): Promise<boolean> {
+export async function startApi(debug = false): Promise<boolean> {
   const port = ENV.PORT || 3000;
   try {
     server.listen(port, () => {
@@ -39,5 +40,3 @@ async function startApi(debug = false): Promise<boolean> {
     return false;
   }
 }
-
-export { startApi };

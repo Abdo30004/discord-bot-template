@@ -1,15 +1,18 @@
 import globals from 'globals';
 import tsParser from '@typescript-eslint/parser';
-import ts from '@typescript-eslint/eslint-plugin';
-import pluginSimpleImportSort from 'eslint-plugin-simple-import-sort';
-
+import tsLint from '@typescript-eslint/eslint-plugin';
+import simpleImportSortPlugin from 'eslint-plugin-simple-import-sort';
+import importPlugin from 'eslint-plugin-import';
+import unicornPlugin from 'eslint-plugin-unicorn';
 
 export default [
   {
     files: ['**/*.ts'],
     plugins: {
-      '@typescript-eslint': ts,
-      'simple-import-sort': pluginSimpleImportSort
+      '@typescript-eslint': tsLint,
+      'simple-import-sort': simpleImportSortPlugin,
+      import: importPlugin,
+      unicorn: unicornPlugin
     },
     languageOptions: {
       globals: {
@@ -20,7 +23,7 @@ export default [
       sourceType: 'module'
     },
     rules: {
-      ...ts.configs.recommended.rules,
+      ...tsLint.configs.recommended.rules,
       semi: 'warn', // Warns if semicolons are missing
       camelcase: 'warn', // Warns if variables are not in camelCase
       eqeqeq: 'error', // Enforces strict equality (=== and !==) instead of loose equality (== and !=)
@@ -39,7 +42,17 @@ export default [
       ],
       '@typescript-eslint/no-explicit-any': 'warn', // Warns against using 'any' type in TypeScript
       '@typescript-eslint/no-empty-function': 'off', // Allows empty functions (useful in some cases like stubs)
-      'simple-import-sort/imports': 'error' // Enforces sorted imports to improve readability
+      'simple-import-sort/imports': 'error', // Enforces sorted imports to improve readability
+      'simple-import-sort/exports': 'error', // Enforces exports imports to improve readability
+      'unicorn/prefer-node-protocol': 'error',
+      'import/no-default-export': 'error',
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'ExportNamedDeclaration[source=null] > ExportSpecifier',
+          message: 'Use inline exports (e.g., export class X {}) instead of separate export statements.'
+        }
+      ]
     }
   },
   {
@@ -49,7 +62,6 @@ export default [
       globals: {
         ...globals.node
       },
-
       ecmaVersion: 5,
       sourceType: 'commonjs'
     }

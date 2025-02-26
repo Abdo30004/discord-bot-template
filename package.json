@@ -16,7 +16,7 @@
     "build": "npm run clean | npm run compile && npm run start",
     "build:bun": "npm run clean | npm run compile && npm run bun",
     "format": "prettier --write src/**/*.ts",
-    "lint:check": "eslint . --ext .ts --ignore-pattern .gitignore",
+    "lint:check": "eslint . --ignore-pattern .gitignore",
     "lint:fix": "npm run lint:check -- --fix"
   },
   "dependencies": {
@@ -37,7 +37,9 @@
     "@typescript-eslint/eslint-plugin": "^8.25.0",
     "@typescript-eslint/parser": "^8.25.0",
     "eslint": "^9.21.0",
+    "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-unicorn": "^57.0.0",
     "prettier": "^3.5.2",
     "rimraf": "^6.0.1"
   }

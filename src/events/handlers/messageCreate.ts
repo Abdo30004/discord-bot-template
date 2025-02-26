@@ -1,10 +1,8 @@
 import { Events } from 'discord.js';
 
-import { MessageCommand } from '../../types/command';
-import { CommandTypes } from '../../types/enums';
 import { Event } from '../../types/event';
 
-const event: Event<Events.MessageCreate> = {
+export const event: Event<Events.MessageCreate> = {
   name: Events.MessageCreate,
   run: async (client, message) => {
     if (message.partial) await message.fetch().catch(() => null);
@@ -14,10 +12,8 @@ const event: Event<Events.MessageCreate> = {
 
     const [commandName, ...args] = message.content.trim().slice(client.config.prefix.length).split(/ +/);
 
-    const commandsCollection = client.commands.get(CommandTypes.MessageCommand);
-    if (!commandsCollection) return false;
+    const command = client.commands.messageCommands.get(commandName);
 
-    const command = commandsCollection.get(commandName) as MessageCommand;
     if (!command) return false;
 
     if (command.devOnly && !client.config.devsIds.includes(message.author.id)) return false;
@@ -34,5 +30,3 @@ const event: Event<Events.MessageCreate> = {
     return true;
   }
 };
-
-export default event;

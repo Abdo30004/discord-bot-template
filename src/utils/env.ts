@@ -13,8 +13,7 @@ export function checkEnvVar<T = string>(
   const envVar = process.env[name];
   if (!envVar) {
     if (panic) {
-      Logger.logErrorMessage(`Missing required environment variable: ${name}`);
-      process.exit(1);
+      Logger.logErrorMessage(`Missing required environment variable: ${name}`, true);
     }
     return undefined;
   }

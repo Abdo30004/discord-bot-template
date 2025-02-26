@@ -1,26 +1,20 @@
 import { Events } from 'discord.js';
 
-import { ContextMenuCommand, SlashCommand } from '../../types/command';
-import { CommandTypes } from '../../types/enums';
 import { Event } from '../../types/event';
 import { Logger } from '../../utils/logger';
 
-const event: Event<Events.InteractionCreate> = {
+export const event: Event<Events.InteractionCreate> = {
   name: Events.InteractionCreate,
   run: async (client, interaction) => {
-    let CommandType: CommandTypes | null = null;
-    if (interaction.isChatInputCommand()) CommandType = CommandTypes.SlashCommand;
-    else if (interaction.isUserContextMenuCommand()) CommandType = CommandTypes.UserContextMenuCommand;
-    else if (interaction.isMessageContextMenuCommand()) CommandType = CommandTypes.MessageContextMenuCommand;
+    let commandsCollection = null;
+
+    if (interaction.isChatInputCommand()) commandsCollection = client.commands.slashCommands;
+    else if (interaction.isContextMenuCommand()) commandsCollection = client.commands.contextMenuCommands;
     else return false;
-
-    if (!CommandType) return false;
-
-    const commandsCollection = client.commands.get(CommandType);
 
     if (!commandsCollection) return false;
 
-    const command = commandsCollection.get(interaction.commandName) as SlashCommand | ContextMenuCommand;
+    const command = commandsCollection.get(interaction.commandName);
 
     if (!command) return false;
 
@@ -38,12 +32,7 @@ const event: Event<Events.InteractionCreate> = {
     Logger.logCommandUsed(command, interaction.user);
 
     try {
-      if (command.type === CommandTypes.SlashCommand && interaction.isChatInputCommand())
-        await command.execute(client, interaction);
-      else if (command.type === CommandTypes.MessageContextMenuCommand && interaction.isMessageContextMenuCommand())
-        await command.execute(client, interaction);
-      else if (command.type === CommandTypes.UserContextMenuCommand && interaction.isUserContextMenuCommand())
-        await command.execute(client, interaction);
+      await command.execute(client, interaction as any); /* eslint-disable-line @typescript-eslint/no-explicit-any*/
     } catch (error) {
       Logger.logError(error as Error);
 
@@ -63,5 +52,3 @@ const event: Event<Events.InteractionCreate> = {
     return true;
   }
 };
-
-export default event;
