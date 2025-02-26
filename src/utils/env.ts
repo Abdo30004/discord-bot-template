@@ -24,7 +24,7 @@ export const PORT = checkEnvVar('PORT', value => parseInt(value));
 
 export const BOT_TOKEN = checkEnvVar('BOT_TOKEN');
 
-export const CLIENT_ID = checkEnvVar('BOT_TOKEN');
+export const CLIENT_ID = checkEnvVar('CLIENT_ID');
 
 export const MONGO_URI = checkEnvVar('MONGO_URI');
 

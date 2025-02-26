@@ -8,13 +8,13 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node --enable-source-maps dist/index.js",
+    "dev":"",
     "dev:ts": "nodemon src/index.ts",
     "bun": "bun dist/index.js",
     "bun:ts": "bun src/index.ts",
     "clean": "rimraf dist",
     "compile": "tsc",
-    "build": "npm run clean | npm run compile && npm run start",
-    "build:bun": "npm run clean | npm run compile && npm run bun",
+    "build": "npm run clean && npm run compile && npm run start",
     "format": "prettier --write src/**/*.ts",
     "lint:check": "eslint . --ignore-pattern .gitignore",
     "lint:fix": "npm run lint:check -- --fix"
