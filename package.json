@@ -15,7 +15,7 @@
     "compile": "tsc",
     "build": "npm run clean && npm run compile && npm run start",
     "format": "prettier --write src/**/*.ts",
-    "lint:check": "eslint . --ignore-pattern .gitignore",
+    "lint:check": "eslint .",
     "lint:fix": "npm run lint:check -- --fix"
   },
   "dependencies": {

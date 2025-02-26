@@ -4,6 +4,12 @@ export enum CommandTypes {
   UserContextMenuCommand,
   MessageContextMenuCommand,
   ButtonCommand,
-  SelectMenuCommand,
+  //SelectMenuCommand,
+  StringSelectMenuCommand,
+  UserSelectMenuCommand,
+  ChannelSelectMenuCommand,
+  RoleSelectMenuCommand,
+  MentionableSelectMenuCommand,
+
   ModalSubmitCommand
 }

@@ -7,13 +7,19 @@ export const event = createEvent({
   name: Events.InteractionCreate,
   run: async (client, interaction) => {
     let commandsCollection = null;
-    if (interaction.isChatInputCommand()) commandsCollection = client.commands.slashCommands;
-    else if (interaction.isContextMenuCommand()) commandsCollection = client.commands.contextMenuCommands;
+
+    if (interaction.isButton()) commandsCollection = client.commands.buttonCommands;
+    else if (interaction.isModalSubmit()) commandsCollection = client.commands.modalSubmit;
+    else if (interaction.isStringSelectMenu()) commandsCollection = client.commands.stringSelectMenuCommands;
+    else if (interaction.isUserSelectMenu()) commandsCollection = client.commands.userSelectMenuCommands;
+    else if (interaction.isRoleSelectMenu()) commandsCollection = client.commands.roleSelectMenuCommands;
+    else if (interaction.isMentionableSelectMenu()) commandsCollection = client.commands.mentionableSelectMenuCommands;
+    else if (interaction.isChannelSelectMenu()) commandsCollection = client.commands.channelSelectMenuCommands;
     else return false;
 
     if (!commandsCollection) return false;
 
-    const command = commandsCollection.get(interaction.commandName);
+    const command = commandsCollection.get(interaction.customId);
 
     if (!command) return false;
 
@@ -22,13 +28,10 @@ export const event = createEvent({
         content: "You don't have permission to use this command.",
         ephemeral: true
       });
-
       return false;
     }
 
     if (command.defer) await interaction.deferReply({ ephemeral: command.ephemeral });
-
-    Logger.logCommandUsed(command, interaction.user);
 
     try {
       await command.execute(client, interaction as any); /* eslint-disable-line @typescript-eslint/no-explicit-any*/

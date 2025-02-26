@@ -1,17 +1,21 @@
-import {
-  AnySelectMenuInteraction,
+import type {
   ButtonInteraction,
+  ChannelSelectMenuInteraction,
   ChatInputCommandInteraction,
   Collection,
   ContextMenuCommandBuilder,
   ContextMenuCommandInteraction,
+  MentionableSelectMenuInteraction,
   Message,
-  ModalSubmitInteraction
+  ModalSubmitInteraction,
+  RoleSelectMenuInteraction,
+  StringSelectMenuInteraction,
+  UserSelectMenuInteraction
 } from 'discord.js';
 
-import { Client } from '../base/client';
-import { MessageCommandBuilder } from '../base/messageCommandBuilder';
-import { CommandTypes } from './enums';
+import type { Client } from '../base/client';
+import type { MessageCommandBuilder } from '../base/messageCommandBuilder';
+import type { CommandTypes } from './enums';
 
 type BooleanPromise = Promise<boolean>;
 
@@ -36,6 +40,8 @@ interface InteractionCommand extends BaseCommand {
   defer?: boolean;
   ephemeral?: boolean;
 }
+
+/* Application Commands */
 interface SlashCommand extends InteractionCommand {
   type: CommandTypes.SlashCommand;
   data: SharedSlashCommand;
@@ -48,6 +54,8 @@ interface ContextMenuCommand extends InteractionCommand {
   execute: (client: Client, interaction: ContextMenuCommandInteraction) => BooleanPromise;
 }
 
+/* Component Commands */
+
 type componentCommandData = {
   name: string;
   customId: string;
@@ -58,20 +66,47 @@ interface ButtonCommand extends InteractionCommand {
   data: componentCommandData;
   execute: (client: Client, interaction: ButtonInteraction) => BooleanPromise;
 }
-
-interface SelectMenuCommand extends InteractionCommand {
-  type: CommandTypes.SelectMenuCommand;
-  data: componentCommandData;
-  execute: (client: Client, interaction: AnySelectMenuInteraction) => BooleanPromise;
-}
-
 interface ModalSubmitCommand extends InteractionCommand {
   type: CommandTypes.ModalSubmitCommand;
   data: componentCommandData;
   execute: (client: Client, interaction: ModalSubmitInteraction) => BooleanPromise;
 }
+interface StringSelectMenuCommand extends InteractionCommand {
+  type: CommandTypes.StringSelectMenuCommand;
+  data: componentCommandData;
+  execute: (client: Client, interaction: StringSelectMenuInteraction) => BooleanPromise;
+}
+interface ChannelSelectMenuCommand extends InteractionCommand {
+  type: CommandTypes.ChannelSelectMenuCommand;
+  data: componentCommandData;
+  execute: (client: Client, interaction: ChannelSelectMenuInteraction) => BooleanPromise;
+}
+interface UserSelectMenuCommand extends InteractionCommand {
+  type: CommandTypes.UserSelectMenuCommand;
+  data: componentCommandData;
+  execute: (client: Client, interaction: UserSelectMenuInteraction) => BooleanPromise;
+}
+interface RoleSelectMenuCommand extends InteractionCommand {
+  type: CommandTypes.RoleSelectMenuCommand;
+  data: componentCommandData;
+  execute: (client: Client, interaction: RoleSelectMenuInteraction) => BooleanPromise;
+}
 
-declare type Command =
+interface MentionableSelectMenuCommand extends InteractionCommand {
+  type: CommandTypes.MentionableSelectMenuCommand;
+  data: componentCommandData;
+  execute: (client: Client, interaction: MentionableSelectMenuInteraction) => BooleanPromise;
+}
+
+declare type ApplicationCommand = SlashCommand | ContextMenuCommand;
+declare type SelectMenuCommand =
+  | StringSelectMenuCommand
+  | UserSelectMenuCommand
+  | MentionableSelectMenuCommand
+  | RoleSelectMenuCommand
+  | ChannelSelectMenuCommand;
+
+declare type AnyCommand =
   | MessageCommand
   | SlashCommand
   | ContextMenuCommand
@@ -79,15 +114,16 @@ declare type Command =
   | SelectMenuCommand
   | ModalSubmitCommand;
 
-declare type ApplicationCommand = SlashCommand | ContextMenuCommand;
-
 declare interface ClientCommands {
   messageCommands: Collection<string, MessageCommand>;
   slashCommands: Collection<string, SlashCommand>;
   contextMenuCommands: Collection<string, ContextMenuCommand>;
   buttonCommands: Collection<string, ButtonCommand>;
-  selectMenuCommands: Collection<string, SelectMenuCommand>;
   modalSubmit: Collection<string, ModalSubmitCommand>;
-
+  stringSelectMenuCommands: Collection<string, StringSelectMenuCommand>;
+  userSelectMenuCommands: Collection<string, UserSelectMenuCommand>;
+  roleSelectMenuCommands: Collection<string, RoleSelectMenuCommand>;
+  channelSelectMenuCommands: Collection<string, ChannelSelectMenuCommand>;
+  mentionableSelectMenuCommands: Collection<string, MentionableSelectMenuCommand>;
   applicationCommands: Collection<string, ApplicationCommand>;
 }

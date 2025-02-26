@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 import { ENV } from '../utils/env';
+import { Logger } from '../utils/logger';
 import * as models from './models/exports';
 
 export const connectToDB = async () => {
@@ -12,7 +13,7 @@ export const connectToDB = async () => {
 
     return true;
   } catch (error) {
-    console.error(error);
+    Logger.logError(error as Error);
     return false;
   }
 };

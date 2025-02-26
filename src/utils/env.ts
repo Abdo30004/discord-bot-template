@@ -30,7 +30,13 @@ export const MONGO_URI = checkEnvVar('MONGO_URI');
 
 export const DATABASE_NAME = checkEnvVar('DATABASE_NAME');
 
+export const WEBHOOK_URL = checkEnvVar('WEBHOOK_URL', undefined, false) || null;
+
 export const NODE_ENV = checkEnvVar('NODE_ENV');
+
+export const isProduction = NODE_ENV === 'production';
+
+export const isDevelopment = NODE_ENV === 'development';
 
 export const ENV = {
   PORT,
@@ -38,5 +44,8 @@ export const ENV = {
   CLIENT_ID,
   MONGO_URI,
   DATABASE_NAME,
-  NODE_ENV
+  WEBHOOK_URL,
+  NODE_ENV,
+  isProduction,
+  isDevelopment
 };

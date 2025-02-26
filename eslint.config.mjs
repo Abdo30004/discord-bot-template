@@ -42,6 +42,13 @@ export default [
       ],
       '@typescript-eslint/no-explicit-any': 'warn', // Warns against using 'any' type in TypeScript
       '@typescript-eslint/no-empty-function': 'off', // Allows empty functions (useful in some cases like stubs)
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          prefer: 'type-imports',
+          fixStyle: 'separate-type-imports' // Ensures `import type { Type }` instead of `import { type Type }`
+        }
+      ],
       'simple-import-sort/imports': 'error', // Enforces sorted imports to improve readability
       'simple-import-sort/exports': 'error', // Enforces exports imports to improve readability
       'unicorn/prefer-node-protocol': 'error',

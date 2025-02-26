@@ -5,7 +5,7 @@ declare type ClientEventKey = keyof ClientEvents;
 
 declare interface Event<ClientEvent extends ClientEventKey, Ready extends boolean> {
   name: ClientEvent;
-  clientReady?: Ready;
+  clientIsReady?: Ready;
   run: (client: Client<Ready>, ...args: ClientEvents[ClientEvent]) => Promise<boolean>;
 }
 

@@ -3,14 +3,15 @@ import { resolve } from 'node:path';
 import process from 'node:process';
 
 import chalk from 'chalk';
-import { Client as DiscordBotClient, ClientOptions, Collection, Events, REST, Routes } from 'discord.js';
+import type { ClientOptions } from 'discord.js';
+import { Client as DiscordBotClient, Collection, Events, REST, Routes } from 'discord.js';
 
 import { startApi } from '../api/app';
 import { Config } from '../configs/bot';
 import { connectToDB, database } from '../database/main';
-import { ApplicationCommand, ClientCommands, Command } from '../types/command';
+import type { AnyCommand, ApplicationCommand, ClientCommands } from '../types/command';
 import { CommandTypes } from '../types/enums';
-import { AnyEvent } from '../types/event';
+import type { AnyEvent } from '../types/event';
 import { ENV } from '../utils/env';
 import { Logger } from '../utils/logger';
 
@@ -26,7 +27,12 @@ export class Client<Ready extends boolean = boolean> extends DiscordBotClient<Re
     slashCommands: new Collection(),
     contextMenuCommands: new Collection(),
     buttonCommands: new Collection(),
-    selectMenuCommands: new Collection(),
+    stringSelectMenuCommands: new Collection(),
+    userSelectMenuCommands: new Collection(),
+    mentionableSelectMenuCommands: new Collection(),
+    roleSelectMenuCommands: new Collection(),
+    channelSelectMenuCommands: new Collection(),
+
     modalSubmit: new Collection(),
     get applicationCommands() {
       return new Collection<string, ApplicationCommand>([...this.slashCommands, ...this.contextMenuCommands]);
@@ -83,7 +89,7 @@ export class Client<Ready extends boolean = boolean> extends DiscordBotClient<Re
   }
 
   protected async loadCommands(commandsDir: string, debug = false): Promise<boolean> {
-    let commands = await this.readDir<Command>(commandsDir).catch(() => null);
+    let commands = await this.readDir<AnyCommand>(commandsDir).catch(() => null);
     if (!commands) return false;
     commands = commands.sort((a, b) => a.type - b.type || a.data.name.localeCompare(b.data.name));
 
@@ -102,11 +108,23 @@ export class Client<Ready extends boolean = boolean> extends DiscordBotClient<Re
         case CommandTypes.ButtonCommand:
           this.commands.buttonCommands.set(command.data.customId, command);
           break;
-        case CommandTypes.SelectMenuCommand:
-          this.commands.selectMenuCommands.set(command.data.customId, command);
-          break;
         case CommandTypes.ModalSubmitCommand:
           this.commands.modalSubmit.set(command.data.customId, command);
+          break;
+        case CommandTypes.StringSelectMenuCommand:
+          this.commands.stringSelectMenuCommands.set(command.data.customId, command);
+          break;
+        case CommandTypes.UserSelectMenuCommand:
+          this.commands.userSelectMenuCommands.set(command.data.customId, command);
+          break;
+        case CommandTypes.RoleSelectMenuCommand:
+          this.commands.roleSelectMenuCommands.set(command.data.customId, command);
+          break;
+        case CommandTypes.MentionableSelectMenuCommand:
+          this.commands.mentionableSelectMenuCommands.set(command.data.customId, command);
+          break;
+        case CommandTypes.ChannelSelectMenuCommand:
+          this.commands.channelSelectMenuCommands.set(command.data.customId, command);
           break;
       }
 
@@ -122,7 +140,7 @@ export class Client<Ready extends boolean = boolean> extends DiscordBotClient<Re
 
     for (const event of events) {
       this.on(event.name, async (...args) => {
-        if (!this.isReady() && event.clientReady !== false) return false;
+        if (!this.isReady() && event.clientIsReady !== false) return false;
 
         try {
           await event.run(this, ...args);

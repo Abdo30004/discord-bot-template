@@ -1,4 +1,4 @@
-import { MessageCommandBuilderData } from '../types/command';
+import type { MessageCommandBuilderData } from '../types/command';
 
 export class MessageCommandBuilder {
   public data: MessageCommandBuilderData = {
