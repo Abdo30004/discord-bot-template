@@ -1,9 +1,10 @@
-import { Event } from '../../@types/event';
-
-import figlet from 'figlet';
 import chalk from 'chalk';
-const event: Event<'ready'> = {
-  name: 'ready',
+import { Events } from 'discord.js';
+import figlet from 'figlet';
+
+import { Event } from '../../types/event';
+const event: Event<Events.ClientReady> = {
+  name: Events.ClientReady,
   run: async client => {
     const text = figlet.textSync(`${client.user.displayName}`, {
       font: 'Standard',

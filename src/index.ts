@@ -1,12 +1,11 @@
-import { Client } from './base/client';
-import { ActivityType, AllowedMentionsTypes, GatewayIntentBits, Partials, PresenceUpdateStatus } from 'discord.js';
-import { config as envConfig } from 'dotenv';
-import process from 'process';
-import chalk from 'chalk';
-envConfig();
-
-import './api/app';
 import './utils/prototype';
+
+import chalk from 'chalk';
+import { ActivityType, AllowedMentionsTypes, GatewayIntentBits, Partials, PresenceUpdateStatus } from 'discord.js';
+import process from 'process';
+
+import { Client } from './base/client';
+import { ENV } from './utils/env';
 import { Logger } from './utils/logger';
 
 export const client = new Client({
@@ -34,30 +33,23 @@ export const client = new Client({
     status: PresenceUpdateStatus.DoNotDisturb
   }
 });
-
 client.init({
-  token: process.env.TOKEN,
+  token: ENV.BOT_TOKEN,
   commandsDirName: 'commands',
   eventsDirName: 'events',
   registerCommands: true,
   debug: true
 });
 
-
-
-
-
-process.on('unhandledRejection', (error:Error) => {
+process.on('unhandledRejection', (error: Error) => {
   Logger.logError(error);
 });
 
-process.on('uncaughtException', (error:Error) => {
+process.on('uncaughtException', (error: Error) => {
   Logger.logError(error);
 });
-
 
 process.on('SIGINT', async () => {
   console.log(chalk.red.bold('\nShutting down...'));
   process.exit(0);
 });
-

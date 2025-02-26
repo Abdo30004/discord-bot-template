@@ -1,4 +1,5 @@
 import type { ClientEvents } from 'discord.js';
+
 import type { Client } from '../base/client';
 declare type ClientEventKey = keyof ClientEvents;
 

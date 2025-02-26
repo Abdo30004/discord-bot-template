@@ -1,9 +1,10 @@
+import chalk from 'chalk';
 import express from 'express';
 import http from 'http';
-import chalk from 'chalk';
-import { Logger } from '../utils/logger';
 
 import { client } from '../index';
+import { ENV } from '../utils/env';
+import { Logger } from '../utils/logger';
 
 const app = express();
 
@@ -16,16 +17,18 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-app.get('/commands', (req, res) => {
-  res.json(client.commands);
-});
+// app.get('/ready', (req, res) => {
+//   res.json({
+//     status: client.isReady()
+//   });
+// });
 
 app.use((req, res) => {
   res.status(404).send('Not Found');
 });
 
 async function startApi(debug = false): Promise<boolean> {
-  const port = Number(process.env.PORT) || 3000;
+  const port = ENV.PORT || 3000;
   try {
     server.listen(port, () => {
       if (debug) console.log(chalk.green(`Server is running on port http://localhost:${port}`));

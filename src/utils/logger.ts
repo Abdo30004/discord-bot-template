@@ -1,11 +1,26 @@
 import chalk from 'chalk';
-
-import { AnyEvent } from '../@types/event';
-import { CommandTypes } from '../@types/enums';
-import { Command } from '../@types/command';
 import { User } from 'discord.js';
 
+import { Command } from '../types/command';
+import { CommandTypes } from '../types/enums';
+import { AnyEvent } from '../types/event';
+
 class Logger {
+  public static logError(error: Error): void {
+    console.log(
+      `${chalk.red.underline.bold('Error:')} ${chalk.green.bold(
+        error.name
+      )} ${chalk.red.bold(error.message)}\n${chalk.white(error.stack)}`
+    );
+  }
+  public static logErrorMessage(message: string): void {
+    console.log(`${chalk.red.underline.bold('Error:')} ${chalk.red.bold(message)}\n`);
+  }
+
+  public static logWarning(warning: string): void {
+    console.log(`${chalk.yellow.underline.bold('Warning:')} ${chalk.red.bold(warning)}\n`);
+  }
+
   public static logEventRegistered(event: AnyEvent): void {
     console.log(
       `${chalk.blue.underline.bold('Event:')} ${chalk.red.bold(event.name)} ${chalk.magenta('has been registered successfully')}\n`
@@ -18,15 +33,6 @@ class Logger {
       )} ${chalk.blue(CommandTypes[command.type])} ${chalk.magenta('has been registered successfully')}\n`
     );
   }
-
-  public static logError(error: Error): void {
-    console.log(
-      `${chalk.red.underline.bold('Error:')} ${chalk.green.bold(
-        error.name
-      )} ${chalk.red.bold(error.message)}\n${chalk.white(error.stack)}`
-    );
-  }
-
   public static logCommandUsed(command: Command, user: User) {
     const message = `- ${chalk.greenBright(command.data.name)} ${chalk.red(
       CommandTypes[command.type]

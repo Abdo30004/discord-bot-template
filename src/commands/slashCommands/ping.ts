@@ -1,6 +1,7 @@
 import { InteractionContextType, SlashCommandBuilder } from 'discord.js';
-import { Command } from '../../@types/command';
-import { CommandTypes } from '../../@types/enums';
+
+import { Command } from '../../types/command';
+import { CommandTypes } from '../../types/enums';
 
 const command: Command = {
   type: CommandTypes.SlashCommand,

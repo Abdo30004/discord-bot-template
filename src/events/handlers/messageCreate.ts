@@ -1,9 +1,11 @@
-import { Event } from '../../@types/event';
-import { CommandTypes } from '../../@types/enums';
-import { MessageCommand } from '../../@types/command';
+import { Events } from 'discord.js';
 
-const event: Event<'messageCreate'> = {
-  name: 'messageCreate',
+import { MessageCommand } from '../../types/command';
+import { CommandTypes } from '../../types/enums';
+import { Event } from '../../types/event';
+
+const event: Event<Events.MessageCreate> = {
+  name: Events.MessageCreate,
   run: async (client, message) => {
     if (message.partial) await message.fetch().catch(() => null);
     if (message.author.bot) return false;

@@ -1,10 +1,12 @@
-import { Event } from '../../@types/event';
-import { CommandTypes } from '../../@types/enums';
-import { Logger } from '../../utils/logger';
-import { ContextMenuCommand, SlashCommand } from '../../@types/command';
+import { Events } from 'discord.js';
 
-const event: Event<'interactionCreate'> = {
-  name: 'interactionCreate',
+import { ContextMenuCommand, SlashCommand } from '../../types/command';
+import { CommandTypes } from '../../types/enums';
+import { Event } from '../../types/event';
+import { Logger } from '../../utils/logger';
+
+const event: Event<Events.InteractionCreate> = {
+  name: Events.InteractionCreate,
   run: async (client, interaction) => {
     let CommandType: CommandTypes | null = null;
     if (interaction.isChatInputCommand()) CommandType = CommandTypes.SlashCommand;

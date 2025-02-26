@@ -1,6 +1,6 @@
-import { Command } from '../../@types/command';
-import { CommandTypes } from '../../@types/enums';
 import { MessageCommandBuilder } from '../../base/messageCommandBuilder';
+import { Command } from '../../types/command';
+import { CommandTypes } from '../../types/enums';
 
 const command: Command = {
   type: CommandTypes.MessageCommand,

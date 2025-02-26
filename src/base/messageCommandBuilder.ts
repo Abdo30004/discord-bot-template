@@ -1,11 +1,10 @@
-import { MessageCommandBuilderData, MessageCommandCategory } from '../@types/command';
+import { MessageCommandBuilderData } from '../types/command';
 
 export class MessageCommandBuilder {
   public data: MessageCommandBuilderData = {
     name: '',
     description: '',
-    aliases: [],
-    category: null
+    aliases: []
   };
 
   constructor(data?: MessageCommandBuilderData) {
@@ -42,15 +41,6 @@ export class MessageCommandBuilder {
   addAliases(...aliases: string[]) {
     this.data.aliases.push(...aliases.filter(alias => !this.data.aliases.includes(alias)));
     return this;
-  }
-
-  setCategory(category: MessageCommandCategory) {
-    this.data.category = category;
-    return this;
-  }
-
-  get category() {
-    return this.data.category;
   }
 
   toJSON() {

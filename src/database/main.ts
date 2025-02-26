@@ -1,13 +1,13 @@
 import mongoose from 'mongoose';
 
+import { ENV } from '../utils/env';
 import * as models from './models/exports';
-import process from 'process';
 
 const connectToDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      dbName: process.env.DATABASE_NAME,
-      connectTimeoutMS: 30*1000 //
+    await mongoose.connect(ENV.MONGO_URI, {
+      dbName: ENV.DATABASE_NAME,
+      connectTimeoutMS: 30 * 1000 //
     });
 
     return true;

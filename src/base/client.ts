@@ -1,21 +1,27 @@
-import { Client as DiscordBotClient, ClientOptions, Collection, REST, Routes } from 'discord.js';
-import { cwd } from 'process';
-import { readdir, lstat } from 'fs/promises';
-import { resolve } from 'path';
-import { CommandTypes } from '../@types/enums';
-import { Logger } from '../utils/logger';
-import { Config } from '../configs/bot';
-import { Command } from '../@types/command';
-import { AnyEvent } from '../@types/event';
-import { connectToDB, database } from '../database/main';
-import { startApi } from '../api/app';
 import chalk from 'chalk';
+import { Client as DiscordBotClient, ClientOptions, Collection, Events,REST, Routes } from 'discord.js';
+import { lstat,readdir } from 'fs/promises';
+import { resolve } from 'path';
+import { cwd } from 'process';
 import process from 'process';
+
+import { startApi } from '../api/app';
+import { Config } from '../configs/bot';
+import { connectToDB, database } from '../database/main';
+import { Command } from '../types/command';
+import { CommandTypes } from '../types/enums';
+import { AnyEvent } from '../types/event';
+import { ENV } from '../utils/env';
+import { Logger } from '../utils/logger';
+
 
 class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
   protected cwd: string = cwd();
 
   protected isTypescript: boolean = process.argv[1].endsWith('.ts');
+
+  public static readonly sourceFolder = 'src';
+  public static readonly distFolder = 'dist';
 
   public commands: Collection<CommandTypes, Collection<string, Command>> = new Collection();
 
@@ -25,7 +31,7 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
 
   public db = database;
 
-  public env = process.env;
+  public env = ENV;
 
   constructor(options: ClientOptions) {
     super(options);
@@ -33,7 +39,7 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
 
   protected async readDir<T>(dir: string): Promise<T[]> {
     try {
-      const baseDir = this.isTypescript ? 'src' : 'dist';
+      const baseDir = this.isTypescript ? Client.sourceFolder : Client.distFolder;
       const path = resolve(this.cwd, baseDir, dir);
       const files = await readdir(path);
       const data: T[] = [];
@@ -55,7 +61,7 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
 
         if (!d) {
           console.log(`File ${filePath} does not have a default export`);
-          continue;
+          process.exit(1);
         }
 
         data.push(d);
@@ -117,10 +123,10 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
       .flat()
       .map(command => command.data.toJSON());
 
-    const rest = new REST().setToken(this.env.TOKEN);
+    const rest = new REST().setToken(ENV.BOT_TOKEN);
 
     try {
-      await rest.put(Routes.applicationCommands(this.env.CLIENT_ID), {
+      await rest.put(Routes.applicationCommands(ENV.CLIENT_ID), {
         body: commands
       });
       return true;
@@ -143,7 +149,7 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
   protected waitUntilReady(timeout = 60 * 1000): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (this.isReady()) return resolve(true);
-      this.once('ready', () => resolve(true));
+      this.once(Events.ClientReady, () => resolve(true));
       setTimeout(() => reject(false), timeout);
     });
   }
@@ -156,10 +162,10 @@ class Client<Ready extends boolean = boolean> extends DiscordBotClient<Ready> {
     const loadEvents = await this.loadEvents(options.eventsDirName, options.debug);
 
     if (options.debug && loadEvents) console.log(chalk.white.bold.bgBlueBright`Events loaded successfully\n`);
-    
+
     const registeredCommands = options.registerCommands ? await this.registerCommands() : true;
-    
-    if (options.debug && options.registerCommands &&registeredCommands)
+
+    if (options.debug && options.registerCommands && registeredCommands)
       console.log(chalk.white.bold.bgGreen`ApplicationCommands registered successfully\n`);
 
     const connectedToDatabase = await this.startDatabase();
