@@ -8,14 +8,19 @@ export const event = createEvent({
     if (message.partial) await message.fetch().catch(() => null);
     if (message.author.bot) return false;
 
-    if (!message.content.startsWith(client.config.prefix)) return false;
+    const prefixRegex = RegExp(`^(<@!?${client.user.id}> ?|${client.config.prefix})`);
 
-    const [commandName, ...args] = message.content.trim().slice(client.config.prefix.length).split(/ +/);
+    if (!prefixRegex.test(message.content)) return false;
+
+    const pureContent = message.content.trim().replace(prefixRegex, '');
+
+    const [commandName] = pureContent.split(/(?: |\n)+/);
+
+    const args = pureContent.slice(commandName.length).trim().split(/ +/);
 
     const command = client.commands.messageCommands.get(commandName);
 
     if (!command) return false;
-
     if (command.devOnly && !client.config.devsIds.includes(message.author.id)) return false;
 
     client.logger.logCommandUsed(command, message.author);

@@ -3,7 +3,7 @@ import type { ComponentCommandBuilderData } from '../types/command';
 export class ComponentCommandBuilder {
   public data: ComponentCommandBuilderData = {
     name: '',
-    customId: ''
+    customId: /.?/
   };
 
   constructor(data?: ComponentCommandBuilderData) {
@@ -19,13 +19,23 @@ export class ComponentCommandBuilder {
     return this.data.name;
   }
 
-  setCustomId(customId: string) {
+  setCustomId(customId: RegExp | string) {
+    if (typeof customId === 'string') customId = new RegExp(customId);
     this.data.customId = customId;
     return this;
   }
 
   get customId() {
     return this.data.customId;
+  }
+
+  get needReset() {
+    return /[gy]/i.test(this.data.customId.flags);
+  }
+
+  reset() {
+    this.data.customId.lastIndex = 0;
+    return this;
   }
 
   toJSON() {

@@ -1,12 +1,15 @@
-import { Events } from 'discord.js';
+import type { Collection } from 'discord.js';
+import { Events, MessageFlags } from 'discord.js';
 
+import type { ApplicationCommand } from '../../types/command';
 import { createEvent } from '../../utils/create';
 import { Logger } from '../../utils/logger';
 
 export const event = createEvent({
   name: Events.InteractionCreate,
   run: async (client, interaction) => {
-    let commandsCollection = null;
+    let commandsCollection: Collection<string, ApplicationCommand> | null = null;
+
     if (interaction.isChatInputCommand()) commandsCollection = client.commands.slashCommands;
     else if (interaction.isContextMenuCommand()) commandsCollection = client.commands.contextMenuCommands;
     else return false;
@@ -26,7 +29,7 @@ export const event = createEvent({
       return false;
     }
 
-    if (command.defer) await interaction.deferReply({ ephemeral: command.ephemeral });
+    if (command.defer) await interaction.deferReply({ flags: command.ephemeral ? MessageFlags.Ephemeral : undefined });
 
     Logger.logCommandUsed(command, interaction.user);
 

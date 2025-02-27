@@ -6,7 +6,7 @@ import { createCommand } from '../../../utils/create';
 
 export const command = createCommand({
   type: CommandTypes.ButtonCommand,
-  data: new ComponentCommandBuilder().setName('test_button').setCustomId('test_button'),
+  data: new ComponentCommandBuilder().setName('test_button').setCustomId(/test-button-(\d+)-(\d+)/),
   execute: async (client, interaction) => {
     const inputs = [
       new TextInputBuilder()

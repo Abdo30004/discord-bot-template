@@ -1,12 +1,14 @@
-import { Events } from 'discord.js';
+import type { Collection } from 'discord.js';
+import { Events, MessageFlags } from 'discord.js';
 
+import type { ComponentCommand } from '../../types/command';
 import { createEvent } from '../../utils/create';
 import { Logger } from '../../utils/logger';
 
 export const event = createEvent({
   name: Events.InteractionCreate,
   run: async (client, interaction) => {
-    let commandsCollection = null;
+    let commandsCollection: Collection<RegExp, ComponentCommand> | null = null;
 
     if (interaction.isButton()) commandsCollection = client.commands.buttonCommands;
     else if (interaction.isModalSubmit()) commandsCollection = client.commands.modalSubmit;
@@ -19,7 +21,7 @@ export const event = createEvent({
 
     if (!commandsCollection) return false;
 
-    const command = commandsCollection.get(interaction.customId);
+    const command = commandsCollection.find(cmd => cmd.data.customId.test(interaction.customId));
 
     if (!command) return false;
 
@@ -31,10 +33,23 @@ export const event = createEvent({
       return false;
     }
 
-    if (command.defer) await interaction.deferReply({ ephemeral: command.ephemeral });
+    if (command.defer)
+      await interaction.deferReply({
+        flags: command.ephemeral ? MessageFlags.Ephemeral : undefined
+      });
+
+    const commandIdData = command.data.customId.exec(interaction.customId);
+
+    if (!commandIdData) return false;
+
+    if (command.data.needReset) command.data.reset();
 
     try {
-      await command.execute(client, interaction as any); /* eslint-disable-line @typescript-eslint/no-explicit-any*/
+      await command.execute(
+        client,
+        interaction as any /* eslint-disable-line @typescript-eslint/no-explicit-any*/,
+        commandIdData
+      );
     } catch (error) {
       Logger.logError(error as Error);
 

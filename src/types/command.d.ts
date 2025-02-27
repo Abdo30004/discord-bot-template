@@ -59,44 +59,52 @@ interface ContextMenuCommand extends InteractionCommand {
 
 type ComponentCommandBuilderData = {
   name: string;
-  customId: string;
+  customId: RegExp;
 };
-
+type t=RegExpExecArray | RegExpMatchArray
 interface ButtonCommand extends InteractionCommand {
   type: CommandTypes.ButtonCommand;
   data: ComponentCommandBuilder;
-  execute: (client: Client, interaction: ButtonInteraction) => BooleanPromise;
+  execute: (client: Client, interaction: ButtonInteraction, commandIdData: RegExpExecArray) => BooleanPromise;
 }
 interface ModalSubmitCommand extends InteractionCommand {
   type: CommandTypes.ModalSubmitCommand;
   data: ComponentCommandBuilder;
-  execute: (client: Client, interaction: ModalSubmitInteraction) => BooleanPromise;
+  execute: (client: Client, interaction: ModalSubmitInteraction, commandIdData: RegExpExecArray) => BooleanPromise;
 }
 interface StringSelectMenuCommand extends InteractionCommand {
   type: CommandTypes.StringSelectMenuCommand;
   data: ComponentCommandBuilder;
-  execute: (client: Client, interaction: StringSelectMenuInteraction) => BooleanPromise;
+  execute: (client: Client, interaction: StringSelectMenuInteraction, commandIdData: RegExpExecArray) => BooleanPromise;
 }
 interface ChannelSelectMenuCommand extends InteractionCommand {
   type: CommandTypes.ChannelSelectMenuCommand;
   data: ComponentCommandBuilder;
-  execute: (client: Client, interaction: ChannelSelectMenuInteraction) => BooleanPromise;
+  execute: (
+    client: Client,
+    interaction: ChannelSelectMenuInteraction,
+    commandIdData: RegExpExecArray
+  ) => BooleanPromise;
 }
 interface UserSelectMenuCommand extends InteractionCommand {
   type: CommandTypes.UserSelectMenuCommand;
   data: ComponentCommandBuilder;
-  execute: (client: Client, interaction: UserSelectMenuInteraction) => BooleanPromise;
+  execute: (client: Client, interaction: UserSelectMenuInteraction, commandIdData: RegExpExecArray) => BooleanPromise;
 }
 interface RoleSelectMenuCommand extends InteractionCommand {
   type: CommandTypes.RoleSelectMenuCommand;
   data: ComponentCommandBuilder;
-  execute: (client: Client, interaction: RoleSelectMenuInteraction) => BooleanPromise;
+  execute: (client: Client, interaction: RoleSelectMenuInteraction, commandIdData: RegExpExecArray) => BooleanPromise;
 }
 
 interface MentionableSelectMenuCommand extends InteractionCommand {
   type: CommandTypes.MentionableSelectMenuCommand;
   data: ComponentCommandBuilder;
-  execute: (client: Client, interaction: MentionableSelectMenuInteraction) => BooleanPromise;
+  execute: (
+    client: Client,
+    interaction: MentionableSelectMenuInteraction,
+    commandIdData: RegExpExecArray
+  ) => BooleanPromise;
 }
 
 declare type ApplicationCommand = SlashCommand | ContextMenuCommand;
@@ -107,24 +115,20 @@ declare type SelectMenuCommand =
   | RoleSelectMenuCommand
   | ChannelSelectMenuCommand;
 
-declare type AnyCommand =
-  | MessageCommand
-  | SlashCommand
-  | ContextMenuCommand
-  | ButtonCommand
-  | SelectMenuCommand
-  | ModalSubmitCommand;
+declare type ComponentCommand = ButtonCommand | ModalSubmitCommand | SelectMenuCommand;
+
+declare type AnyCommand = MessageCommand | ApplicationCommand | ComponentCommand;
 
 declare interface ClientCommands {
   messageCommands: Collection<string, MessageCommand>;
   slashCommands: Collection<string, SlashCommand>;
   contextMenuCommands: Collection<string, ContextMenuCommand>;
-  buttonCommands: Collection<string, ButtonCommand>;
-  modalSubmit: Collection<string, ModalSubmitCommand>;
-  stringSelectMenuCommands: Collection<string, StringSelectMenuCommand>;
-  userSelectMenuCommands: Collection<string, UserSelectMenuCommand>;
-  roleSelectMenuCommands: Collection<string, RoleSelectMenuCommand>;
-  channelSelectMenuCommands: Collection<string, ChannelSelectMenuCommand>;
-  mentionableSelectMenuCommands: Collection<string, MentionableSelectMenuCommand>;
   applicationCommands: Collection<string, ApplicationCommand>;
+  buttonCommands: Collection<RegExp, ButtonCommand>;
+  modalSubmit: Collection<RegExp, ModalSubmitCommand>;
+  stringSelectMenuCommands: Collection<RegExp, StringSelectMenuCommand>;
+  userSelectMenuCommands: Collection<RegExp, UserSelectMenuCommand>;
+  roleSelectMenuCommands: Collection<RegExp, RoleSelectMenuCommand>;
+  channelSelectMenuCommands: Collection<RegExp, ChannelSelectMenuCommand>;
+  mentionableSelectMenuCommands: Collection<RegExp, MentionableSelectMenuCommand>;
 }

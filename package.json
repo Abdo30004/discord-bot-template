@@ -1,6 +1,6 @@
 {
   "name": "discord-bot-template",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "simple discord bot template with typescript",
   "keywords": [],
   "author": "y.abderrahmane",
@@ -8,6 +8,7 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node --enable-source-maps dist/index.js",
+    "dev": "npm run build && npm run start",
     "dev:ts": "nodemon src/index.ts",
     "bun": "bun dist/index.js",
     "bun:ts": "bun src/index.ts",
@@ -20,7 +21,7 @@
   },
   "dependencies": {
     "chalk": "^4.1.2",
-    "discord.js": "^14.16.3",
+    "discord.js": "^14.18.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "figlet": "^1.7.0",
