@@ -1,4 +1,5 @@
 import type {
+  AutocompleteInteraction,
   ButtonInteraction,
   ChannelSelectMenuInteraction,
   ChatInputCommandInteraction,
@@ -46,6 +47,7 @@ interface InteractionCommand extends BaseCommand {
 interface SlashCommand extends InteractionCommand {
   type: CommandTypes.SlashCommand;
   data: SharedSlashCommand;
+  autoComplete?: (client: Client, interaction: AutocompleteInteraction) => BooleanPromise;
   execute: (client: Client, interaction: ChatInputCommandInteraction) => BooleanPromise;
 }
 
@@ -61,7 +63,7 @@ type ComponentCommandBuilderData = {
   name: string;
   customId: RegExp;
 };
-type t=RegExpExecArray | RegExpMatchArray
+
 interface ButtonCommand extends InteractionCommand {
   type: CommandTypes.ButtonCommand;
   data: ComponentCommandBuilder;

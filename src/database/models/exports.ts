@@ -1,3 +1,1 @@
-import { GuildModel } from './guild.model';
-
-export { GuildModel }; /* eslint-disable-line */
+export { GuildModel } from './guild.model';

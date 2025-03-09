@@ -13,7 +13,7 @@ export const command = createCommand({
 
   execute: async (_client, interaction) => {
     const str = interaction.options.getString('input');
-    await interaction.reply(`Pong! ${str}`);
+    await interaction.reply(str ? `Pong! ${str}` : 'Pong!');
     return true;
   }
 });
