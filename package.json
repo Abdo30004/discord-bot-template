@@ -16,6 +16,7 @@
     "compile": "tsc",
     "build": "npm run clean && npm run compile",
     "format": "prettier --write src/**/*.ts",
+    "lint": "npm run lint:check",
     "lint:check": "eslint .",
     "lint:fix": "npm run lint:check -- --fix"
   },
