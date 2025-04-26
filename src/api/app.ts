@@ -1,6 +1,6 @@
 import http from 'node:http';
 
-import chalk from 'chalk';
+import colors from 'ansi-colors';
 import express from 'express';
 
 import { client } from '../index';
@@ -32,7 +32,7 @@ export async function startApi(debug = false): Promise<boolean> {
   const port = ENV.PORT || 3000;
   try {
     server.listen(port, () => {
-      if (debug) console.log(chalk.white.bold.bgCyanBright(`Server is running http://localhost:${port}`));
+      if (debug) console.log(colors.white.bold.bgCyanBright(`Server is running http://localhost:${port}`));
     });
     return true;
   } catch (error) {

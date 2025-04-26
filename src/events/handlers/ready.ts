@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import colors from 'ansi-colors';
 import { Events } from 'discord.js';
 import figlet from 'figlet';
 
@@ -14,7 +14,8 @@ export const event = createEvent({
       verticalLayout: 'default',
       whitespaceBreak: true
     });
-    console.log(chalk.yellow.bold(text), '\n');
+
+    console.log(colors.yellow.bold(text), '\n');
 
     return true;
   }

@@ -2,7 +2,7 @@ import { lstat, readdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import process from 'node:process';
 
-import chalk from 'chalk';
+import colors from 'ansi-colors';
 import type { ClientOptions } from 'discord.js';
 import { Client as DiscordBotClient, Collection, REST, Routes } from 'discord.js';
 
@@ -99,7 +99,7 @@ export class Client<Ready extends boolean = boolean> extends DiscordBotClient<Re
         try {
           await event.run(this, ...args);
         } catch (error) {
-          console.log(chalk.red`Error in event ${event.name}`);
+          console.log(colors.red(`Error in event ${event.name}`));
           Logger.logError(error as Error);
         }
       });
@@ -185,30 +185,30 @@ export class Client<Ready extends boolean = boolean> extends DiscordBotClient<Re
   public async init(options: StartOptions): Promise<boolean> {
     const loadCommands = await this.loadCommands(options.commandsDirName, options.debug);
 
-    if (options.debug && loadCommands) console.log(chalk.white.bold.bgGreenBright`Commands loaded successfully\n`);
+    if (options.debug && loadCommands) console.log(colors.white.bold.bgGreenBright(`Commands loaded successfully\n`));
 
     const loadEvents = await this.loadEvents(options.eventsDirName, options.debug);
 
-    if (options.debug && loadEvents) console.log(chalk.white.bold.bgBlueBright`Events loaded successfully\n`);
+    if (options.debug && loadEvents) console.log(colors.white.bold.bgBlueBright(`Events loaded successfully\n`));
 
     const registeredCommands = options.registerCommands ? await this.registerCommands() : true;
 
     if (options.debug && options.registerCommands && registeredCommands)
-      console.log(chalk.white.bold.bgGreen`ApplicationCommands registered successfully\n`);
+      console.log(colors.white.bold.bgGreen(`ApplicationCommands registered successfully\n`));
 
     const connectedToDatabase = await this.startDatabase();
 
-    if (options.debug && connectedToDatabase) console.log(chalk.white.bold.bgCyanBright`Connected to database\n`);
+    if (options.debug && connectedToDatabase) console.log(colors.white.bold.bgCyanBright(`Connected to database\n`));
 
     const loggedToDiscord = await this.login(options.token)
       .then(() => true)
       .catch(() => false);
 
-    if (options.debug && loggedToDiscord) console.log(chalk.white.bold.bgGreenBright`Logged in to Discord\n`);
+    if (options.debug && loggedToDiscord) console.log(colors.white.bold.bgGreenBright(`Logged in to Discord\n`));
 
     const startApiSuccess = await startApi(options.debug);
 
-    if (options.debug && startApiSuccess) console.log(chalk.white.bold.bgGreenBright`API started successfully\n`);
+    if (options.debug && startApiSuccess) console.log(colors.white.bold.bgGreenBright(`API started successfully\n`));
 
     const allSuccess =
       loadCommands && loadEvents && registeredCommands && connectedToDatabase && loggedToDiscord && startApiSuccess;
