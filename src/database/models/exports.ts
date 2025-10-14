@@ -1,1 +1,1 @@
-export { GuildModel, type Guild } from './guild.model';
+export { type Guild,GuildModel } from './guild.model';

@@ -1,4 +1,5 @@
-import { model, Schema, InferSchemaType } from 'mongoose';
+import type { InferSchemaType } from 'mongoose';
+import { model, Schema } from 'mongoose';
 
 const GuildSchema = new Schema(
   {
