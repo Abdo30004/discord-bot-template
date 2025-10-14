@@ -1,6 +1,6 @@
-import { model, Schema } from 'mongoose';
+import { model, Schema, InferSchemaType } from 'mongoose';
 
-const GuildSchema = new Schema<Guild>(
+const GuildSchema = new Schema(
   {
     _id: {
       type: String,
@@ -18,5 +18,8 @@ const GuildSchema = new Schema<Guild>(
     timestamps: true
   }
 );
+
+// Infer the TypeScript type from the schema
+export type Guild = InferSchemaType<typeof GuildSchema>;
 
 export const GuildModel = model<Guild>('guilds', GuildSchema);
