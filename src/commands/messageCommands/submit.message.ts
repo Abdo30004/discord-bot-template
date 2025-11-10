@@ -6,16 +6,17 @@ import { createCommand } from '../../utils/create';
 
 export const command = createCommand({
   type: CommandTypes.MessageCommand,
-  data: new MessageCommandBuilder().setName('ping').setDescription('Replies with Pong!'),
+  data: new MessageCommandBuilder().setName('submit').setDescription('submit a form'),
   execute: async (_client, message) => {
     const button = new ButtonBuilder()
-      .setCustomId(`test-button-${message.author.id}-${message.id}`)
-      .setLabel('Test Button')
+      .setCustomId(`submit-button-${message.author.id}`)
+      .setLabel('Submit')
       .setStyle(ButtonStyle.Primary);
+
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
 
     await message.reply({
-      content: 'Pong!',
+      content: 'Please click the button to submit the form.',
       components: [row]
     });
 

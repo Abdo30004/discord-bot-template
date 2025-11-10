@@ -23,7 +23,7 @@ export const event = createEvent({
     if (command.devOnly && !client.config.devsIds.includes(interaction.user.id)) {
       await interaction.reply({
         content: "You don't have permission to use this command.",
-        ephemeral: true
+        flags: [MessageFlags.Ephemeral]
       });
 
       return false;
@@ -43,7 +43,7 @@ export const event = createEvent({
       if (command.defer) {
         await interaction.editReply({ content: errorMessage }).catch(() => null);
       } else {
-        await interaction.reply({ content: errorMessage, ephemeral: true }).catch(() => null);
+        await interaction.reply({ content: errorMessage, flags: [MessageFlags.Ephemeral] }).catch(() => null);
       }
 
       return false;

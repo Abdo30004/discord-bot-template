@@ -8,7 +8,6 @@ export const command = createCommand({
   defer: true,
   ephemeral: true,
   execute: async (client, interaction) => {
-    console.log(interaction.fields);
     await interaction.editReply({ content: 'Test Modal Submitted!' });
     return true;
   }
